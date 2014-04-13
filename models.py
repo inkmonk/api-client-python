@@ -1,98 +1,101 @@
-from dblayer import db
 from flask.ext.security import SQLAlchemyUserDatastore, UserMixin, RoleMixin
-import json,uuid
+import json
+import uuid
 from datetime import datetime
 from model_helpers import Serializer, monetize
 from decimal import Decimal, ROUND_UP, ROUND_DOWN
+from dblayer import db
 
 roles_users = db.Table('roles_users',
-                db.Column('user_id', db.String(40), db.ForeignKey('users.id')),
-                db.Column('role_id', db.Integer(), db.ForeignKey('roles.id')))
+                       db.Column('user_id', db.String(40), db.ForeignKey('users.id')),
+                       db.Column('role_id', db.Integer(), db.ForeignKey('roles.id')))
 
 
 def date_serial(value):
-    return value.strftime("%Y-%m-%d")+" "+value.strftime("%H:%M:%S")
+    return value.strftime("%Y-%m-%d") + " " + value.strftime("%H:%M:%S")
+
 
 class Role(db.Model, RoleMixin):
-    __tablename__= 'roles'
+    __tablename__ = 'roles'
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
 
 
 class Template(db.Model):
-    __tablename__= 'templates'
+    __tablename__ = 'templates'
     id = db.Column(db.String(40), primary_key=True)
-    type = db.Column(db.String(255))
-    dimension = db.Column(db.String(255))
-    created_at = db.Column(db.DateTime())  
+    type = db.Column(db.String(100))
+    dimension = db.Column(db.String(20))
+    created_at = db.Column(db.DateTime())
 
-    def __init__(self, type=None, dimension=None ):
-      self.id = uuid.uuid4().hex
-      self.type = type
-      self.dimension = dimension
-      self.created_at = datetime.utcnow().isoformat() 
+    def __init__(self, type=None, dimension=None):
+        self.id = uuid.uuid4().hex
+        self.type = type
+        self.dimension = dimension
+        self.created_at = datetime.utcnow().isoformat()
 
     def update(self, **kwargs):
         columns = self.__table__.columns.keys()
         for key, value in kwargs:
             if key in columns and (key not in self.__no_overwrite__):
                 setattr(self, key, value)
-
-    def to_json(self):
-        return json.dumps(self.to_serializable_dict()) 
-
-    def __repr__(self):
-        return self.type+" - "+self.dimension
-
-
-class TemplatePriceSlab(db.Model):
-    __tablename__='template_price_slabs'
-    id = db.Column(db.String(40), primary_key=True)
-    template_id = db.Column(db.String(40), db.ForeignKey('templates.id'), primary_key=True)
-    quantity = db.Column(db.Integer)
-    price = db.Column(db.Numeric)
-
-    template = db.relationship("Template", backref=db.backref("price_slabs", cascade="all, delete-orphan" ))
-
-    def __init__(self, template_id=None, quantity=None, price=None):
-      self.id = uuid.uuid4().hex
-      self.template_id=template_id
-      self.quantity=quantity
-      self.price=monetize(price)
-
-    def update(self, **kwargs):
-        columns = self.__table__.columns.keys()
-        for key, value in kwargs:
-            if key in columns and (key not in self.__no_overwrite__):
-                setattr(self, key, value)
-
-    def total_cost(self):
-      return monetize(self.price * self.quantity)
 
     def to_json(self):
         return json.dumps(self.to_serializable_dict())
 
     def __repr__(self):
-        return self.template.type+" - "+self.template.dimension+" - "+str(self.quantity)
-     
+        return self.type + " - " + self.dimension
+
+
+class TemplatePriceSlab(db.Model):
+    __tablename__ = 'template_price_slabs'
+    id = db.Column(db.String(40), primary_key=True)
+    template_id = db.Column(db.String(40), db.ForeignKey('templates.id'), primary_key=True)
+    quantity = db.Column(db.Integer)
+    price = db.Column(db.Numeric)
+
+    template = db.relationship("Template", backref=db.backref("price_slabs", cascade="all, delete-orphan"))
+
+    def __init__(self, template_id=None, quantity=None, price=None):
+        self.id = uuid.uuid4().hex
+        self.template_id = template_id
+        self.quantity = quantity
+        self.price = Decimal(price).quantize(Decimal('.01'), rounding=ROUND_UP)
+
+    def update(self, **kwargs):
+        columns = self.__table__.columns.keys()
+        for key, value in kwargs.items():
+            if key in columns and (key not in self.__no_overwrite__):
+                setattr(self, key, value)
+
+    def to_json(self):
+        return json.dumps(self.to_serializable_dict())
+
+    def total_cost(self):
+      return monetize(self.price * self.quantity)
+
+    def __repr__(self):
+        return self.template.type + " - " + self.template.dimension + " - " + str(self.slab_quantity)
+
 
 class Subscriber(db.Model):
-  __tablename__= 'subscribers'
-  id = db.Column(db.Integer, primary_key=True)
-  email = db.Column(db.String(255), unique=True)
+    __tablename__ = 'subscribers'
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(60), unique=True)
+
 
 class PincodeDetail(db.Model):
-  __tablename__= 'pincode_details'
+    __tablename__ = 'pincode_details'
 
-  id = db.Column(db.Integer,primary_key=True)
-  pincode = db.Column(db.Integer, nullable=False,unique=True)
-  city  = db.Column(db.String(256))
-  state = db.Column(db.String(256))
-  bluedart_prepaid = db.Column(db.Boolean)
-  dotzot_prepaid = db.Column(db.Boolean)
-  professional = db.Column(db.Boolean)
-  bluedart_zone = db.Column(db.String(16))
+    id = db.Column(db.Integer, primary_key=True)
+    pincode = db.Column(db.Integer, nullable=False, unique=True)
+    city = db.Column(db.String(40))
+    state = db.Column(db.String(40))
+    bluedart_prepaid = db.Column(db.Boolean)
+    dotzot_prepaid = db.Column(db.Boolean)
+    professional = db.Column(db.Boolean)
+    bluedart_zone = db.Column(db.String(16))
 
 
 class Order_Product(db.Model, Serializer):
@@ -103,36 +106,19 @@ class Order_Product(db.Model, Serializer):
     order_id = db.Column(db.String(40), db.ForeignKey('orders.id'), primary_key=True)
     product_id = db.Column(db.String(40), db.ForeignKey('products.id'), primary_key=True)
     quantity = db.Column(db.Integer)
-    price = db.Column(db.Numeric)
-    template_price_slab_id = db.Column(db.String(40), db.ForeignKey('template_price_slabs.id'))
 
-    order = db.relationship("Order", backref=db.backref("order_product_assoc", cascade="all, delete-orphan" ))
-    product = db.relationship("Product", backref=db.backref("order_product_assoc", cascade="all, delete-orphan" ))
-    template_price_slab =  db.relationship("TemplatePriceSlab", backref="order_product_assoc")
+    order = db.relationship("Order", backref=db.backref("order_product_assoc", cascade="all, delete-orphan"))
+    product = db.relationship("Product", backref=db.backref("order_product_assoc", cascade="all, delete-orphan"))
 
-    def __init__(self, quantity=None, order=None, product=None, template_price_slab=None):
-      self.id = uuid.uuid4().hex
-      self.order = order
-      self.product = product
-      self.quantity = quantity  
-      self.template_price_slab= template_price_slab  
-      self.price = template_price_slab.price  
-
-    def __init__(self, order=None, product=None, template_price_slab=None):
-      self.id = uuid.uuid4().hex
-      self.order = order
-      self.product = product  
-      self.template_price_slab= template_price_slab
-      self.quantity = template_price_slab.quantity  
-      self.price = template_price_slab.price  
-
-    def cost(self):
-      return monetize(self.price * self.quantity)
-
+    def __init__(self, quantity=None, order=None, product=None):
+        self.id = uuid.uuid4().hex
+        self.order = order
+        self.product = product
+        self.quantity = quantity
 
     def update(self, **kwargs):
         columns = self.__table__.columns.keys()
-        for key, value in kwargs:
+        for key, value in kwargs.items():
             if key in columns and (key not in self.__no_overwrite__):
                 setattr(self, key, value)
 
@@ -159,26 +145,25 @@ class Product(db.Model, Serializer):
     template_id = db.Column(db.String(100))
     quantity = db.Column(db.Integer, default=0)
     created_at = db.Column(db.String(50), nullable=False)
-    user_id = db.Column(db.String(50), db.ForeignKey('users.id'))
+    user_id = db.Column(db.String(40), db.ForeignKey('users.id'))
 
     orders = db.relationship("Order", secondary="orders_products", viewonly=True)
 
     #order_product_assoc = db.relationship('Order_Product', backref='product', primaryjoin=id == Order_Product.product_id)
 
     def __init__(self, name=None, design_file=None, design_status="pending", translucent=False, template_id=None, quantity=None, user_id=None):
-      self.id=uuid.uuid4().hex
-      self.name=name
-      self.design_file=design_file
-      self.design_status=design_status
-      self.translucent = translucent
-      self.created_at = datetime.utcnow().isoformat()
-      self.user_id = user_id
-
-    
+        self.id = uuid.uuid4().hex
+        self.name = name
+        self.design_file = design_file
+        self.design_status = design_status
+        self.translucent = translucent
+        self.created_at = datetime.utcnow().isoformat()
+        self.user_id = user_id
+        self.quantity = quantity
 
     def update(self, **kwargs):
         columns = self.__table__.columns.keys()
-        for key, value in kwargs:
+        for key, value in kwargs.items():
             if key in columns and (key not in self.__no_overwrite__):
                 setattr(self, key, value)
 
@@ -204,23 +189,24 @@ class Customer(db.Model, Serializer):
     state = db.Column(db.String(100))
     country = db.Column(db.String(100), nullable=False)
     pincode = db.Column(db.Integer, nullable=False)
-    user_id = db.Column(db.String(35), db.ForeignKey('users.id'))
+    user_id = db.Column(db.String(40), db.ForeignKey('users.id'))
 
-    def __init__(self, name=None, email=None, phone_number=None, address1=None, address2=None, city=None, state=None, country=None, pincode=None, user=None):
-      self.id = uuid.uuid4().hex
-      self.name = name
-      self.phone_number = phone_number
-      self.address1=address1
-      self.address2=address2
-      self.city = city
-      self.state = state
-      self.country = country
-      self.pincode = pincode
-      self.user = user
+    def __init__(self, name=None, email=None, phone_number=None, address1=None, address2=None, city=None, state=None, country=None, pincode=None, user_id=None):
+        self.id = uuid.uuid4().hex
+        self.name = name
+        self.phone_number = phone_number
+        self.address1 = address1
+        self.address2 = address2
+        self.city = city
+        self.state = state
+        self.country = country
+        self.pincode = pincode
+        self.user_id = user_id
+        self.email = email
 
     def update(self, **kwargs):
         columns = self.__table__.columns.keys()
-        for key, value in kwargs:
+        for key, value in kwargs.items():
             if key in columns and (key not in self.__no_overwrite__):
                 setattr(self, key, value)
 
@@ -232,7 +218,7 @@ class Order(db.Model, Serializer):
     __tablename__ = 'orders'
     __public__ = ['id', 'price', 'customer_id', 'created_at'
                   'delivery_date', 'status', 'tracking_url',
-                  'order_product_assoc', 'package_cover_id']
+                  'package_cover_id', 'products']
     __no_overwrite__ = ['id', 'created_at']
 
     id = db.Column(db.String(40), primary_key=True, unique=True)
@@ -259,18 +245,37 @@ class Order(db.Model, Serializer):
         self.tracking_url = tracking_url
         self.user_id = user_id
 
-    def add_products(self, items=[]):
+    def add_products(self, items=[], id_list=[]):
+        """ Method to add products to an order
+
+        Arguments:
+
+        items: list of tuples of product object and quantity
+        id_list: list of tuples of product id and quantity
+        """
         try:
-            for product, quantity in items:
-              if product.user_id == self.user_id:
-                self.order_products.append(Order_Product(order=self, product=product, quantity=quantity))
+            if not id_list:
+                for product, quantity in items:
+                    if product.user_id == self.user_id:
+                        assoc = Order_Product(order=self,
+                                              product=product,
+                                              quantity=quantity)
+                        self.products.append(assoc)
+            else:
+                for id, quantity in id_list:
+                    product = db.session.query(Product).filter_by(id=id).one()
+                    if product.user_id == self.user_id:
+                        assoc = Order_Product(order=self,
+                                              product=product,
+                                              quantity=quantity)
+                        self.products.append(assoc)
         except Exception as e:
-            print e
-            raise
+                print e
+                raise
 
     def update(self, **kwargs):
         columns = self.__table__.columns.keys()
-        for key, value in kwargs:
+        for key, value in kwargs.items():
             if key in columns and (key not in self.__no_overwrite__):
                 setattr(self, key, value)
 
@@ -282,14 +287,18 @@ class User(db.Model, UserMixin):
     __tablename__ = 'users'
     __public__ = ['id', 'api_key', 'email', 'password',
                   'type', 'phone_number', 'customers', 'products']
-    __no_overwrite__ = ['id', 'secret_access_key']
 
+    #
+    # Note: 'products' added here to enable explicit updating
+    # of products using add_products() and not via update()
+    #
+    __no_overwrite__ = ['id', 'secret_access_key', 'products']
 
     id = db.Column(db.String(40), primary_key=True)
-    email = db.Column(db.String(255), unique=True)
-    password = db.Column(db.String(255))
-    name = db.Column(db.String(255))
-    type = db.Column(db.String(255))
+    email = db.Column(db.String(50))
+    password = db.Column(db.String(50))
+    name = db.Column(db.String(50))
+    type = db.Column(db.String(20))
     active = db.Column(db.Boolean())
     phone_number = db.Column(db.Integer)
     confirmed_at = db.Column(db.DateTime())
@@ -302,23 +311,22 @@ class User(db.Model, UserMixin):
 
     roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
 
-    def __init__(self, name=None, email=None, password=None, type=None, phone_number=None, roles=None, active=None):
-      self.id = uuid.uuid4().hex
-      self.created_at = datetime.utcnow().isoformat()   
-      self.name = name
-      self.email = email
-      self.password = password
-      self.type = type
-      self.phone_number = phone_number
-      self.api_key =  uuid.uuid4().hex
-      self.secret_access_key = uuid.uuid4().hex
-      self.active = active 
-      self.roles = roles
-
+    def __init__(self, name=None, email=None, password=None, type=None, phone_number=None, roles=[], active=None):
+        self.id = uuid.uuid4().hex
+        self.created_at = datetime.utcnow().isoformat()
+        self.name = name
+        self.email = email
+        self.password = password
+        self.type = type
+        self.phone_number = phone_number
+        self.api_key = uuid.uuid4().hex
+        self.secret_access_key = uuid.uuid4().hex
+        self.active = active
+        self.roles = roles
 
     def update(self, **kwargs):
         columns = self.__table__.columns.keys()
-        for key, value in kwargs:
+        for key, value in kwargs.items():
             if key in columns and (key not in self.__no_overwrite__):
                 setattr(self, key, value)
 
