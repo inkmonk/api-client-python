@@ -1,4 +1,4 @@
 stickystamp
 ===========
 
-The base repo for www.stickystamp.com
+The DB repo for www.stickystamp.com
