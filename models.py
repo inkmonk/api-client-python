@@ -296,7 +296,7 @@ class User(db.Model, UserMixin):
 
     id = db.Column(db.String(40), primary_key=True)
     email = db.Column(db.String(50))
-    password = db.Column(db.String(50))
+    password = db.Column(db.String(255))
     name = db.Column(db.String(50))
     type = db.Column(db.String(20))
     active = db.Column(db.Boolean())
