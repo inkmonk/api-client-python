@@ -284,7 +284,7 @@ class Order(db.Model, Serializer):
                         assoc = Order_Product(order_id=self.id,
                                               product_id=product.id,
                                               template_price_slab_id=template_price_slab_id)
-                        self.amount+=monetize(db.session.query(TemplatePriceSlab).get(template_price_slab_id).price)
+                        self.amount+=monetize(db.session.query(TemplatePriceSlab).get(template_price_slab_id).total_cost)
                         assocs.append(assoc)
             else:
                 for id, template_price_slab_id in id_list:
@@ -293,7 +293,7 @@ class Order(db.Model, Serializer):
                         assoc = Order_Product(order_id=self.id,
                                               product_id=id,
                                               template_price_slab_id=template_price_slab_id)
-                        self.amount+=monetize(db.session.query(TemplatePriceSlab).get(template_price_slab_id).price)
+                        self.amount+=monetize(db.session.query(TemplatePriceSlab).get(template_price_slab_id).total_cost)
                         assocs.append(assoc)
             db.session.add_all(assocs)
             db.session.commit()
