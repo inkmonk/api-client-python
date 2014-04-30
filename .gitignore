@@ -1,0 +1,8 @@
+*.pyc
+*.log
+build/
+dist/
+*.egg-info
+fabfile.py
+devconfig.py
+cmyksoup/config.py
