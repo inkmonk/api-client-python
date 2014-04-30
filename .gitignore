@@ -6,3 +6,4 @@ dist/
 fabfile.py
 devconfig.py
 cmyksoup/config.py
+prodconfig.py
