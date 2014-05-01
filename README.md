@@ -64,13 +64,15 @@ A `Product` object is returned with all the attributes set.
 
 A list of all product objects belonging to the user with all attributes set
 
+`Product.all()`
+
 -----------------------------------------------------------------------------
 
 ####Fetch a product when some attributes are known####
 
 If any of the attributes of the product are known, you can use these methods to fetch the product object. For all these methods `params` denotes keywords arguments where keywords can be anything mentioned in the list of attributes above.
 
-----------------------------------------------
+
 
 `Product.fetch(*params)` - Returns a list of products matching the attributes provided
 
@@ -151,7 +153,7 @@ For the most common use cases, we have 4 convenience factory methods for creatin
 #####Returns#####
 A package object with various attributes set
 
-#####Example##### 
+#####Example
 
 `package = Package.product( "External Tshirt L",1).create( next= "hackerearth.com" )`
 
