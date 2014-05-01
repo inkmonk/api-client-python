@@ -6,13 +6,13 @@ The Python client for interacting with the CMYKsoup API hosted at api.cmyksoup.c
 Download the zip file. Inside the folder named cmyksoup, there is a file called default_config.py. Change its name to config.py and set the values of `API_KEY` and `API_SECRET_ACCESS_KEY` with the keys you obtained from us. 
 Now run the setup.py with `python setup.py install`. 
 
----------------------------------------------------------------------
+-----------------------------------------------------------------------------
 
 ## Usage ##
 In your python code or the interpreter, just add this import line
 `from cmyksoup import *`
 
----------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------
 
 ## Product ##
 
@@ -30,7 +30,7 @@ In your python code or the interpreter, just add this import line
 
 `third_party` - set to True if the product is from a 3rd party manufacturer
 
-----------------------------------------------------------------------
+-----------------------------------------------------------------------------
 
 
 #### Creating a product ####
@@ -58,7 +58,44 @@ A `Product` object is returned with all the attributes set.
 
 `product = Product.create("My Sticker", third_party=True)`
 
----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+
+####List all Products####
+
+A list of all product objects belonging to the user with all attributes set
+
+-----------------------------------------------------------------------------
+
+####Fetch a product when some attributes are known####
+
+If any of the attributes of the product are known, you can use these methods to fetch the product object. For all these methods `params` denotes keywords arguments where keywords can be anything mentioned in the list of attributes above.
+
+----------------------------------------------
+
+`Product.fetch(*params)` - Returns a list of products matching the attributes provided
+
+#####Example#####
+`products=Product.fetch(third_party=True)`
+
+----------------------------------------------
+
+`Product.fetch_one(*params)` - Use this if you want to make sure that exactly one product matches the given attributes.
+It will return None if multiple products match or if none match. It will give a product object only if exactly one matches
+
+#####Example#####
+`product=Product.fetch_one(name="Contest shirt")`
+
+----------------------------------------------
+
+`Product.get_id(name, *params)` - Use this to get the id of the product if the name or other attributes are known. 
+
+#####Example#####
+`product_id=Product.get_id("Contest shirt")`
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------
 
 ##Customer##
 
@@ -92,12 +129,12 @@ And the following self explanatory attributes:
 
 `customer` - If customer is set, this points to a `Customer` object with various attributes set
 
---------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------
+
 
 ### Creating a Package ###
 For the most common use cases, we have 4 convenience factory methods for creating products.
 
-------------------------------------------------------------------------------------------------------
 
 #### To create a single package of a single product ####
 
@@ -190,7 +227,29 @@ A tuple of packages and failures. First is an array of package objects which wer
 #####Example#####
 `pkgs, failures = Package.products( ("Globe Tshirt L",1), ("New Tshirt M",1) ).bulk_create(2)`
 
-------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------
+
+#### Listing all packages ####
+
+`Package.all()`
+
+#####Returns#####
+
+A list of package objects
+
+-------------------------------------------------------------------------------------------------------
+
+####Fetching the details of a package ####
+
+`Package.get(id)`
+
+#####Returns#####
+
+A package object with all attributes set. If no matching id was found in DB, it returns None
+
+
+
+
 
 
 
