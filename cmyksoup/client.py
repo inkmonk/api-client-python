@@ -43,6 +43,7 @@ def get_signature(secret_key, request=None, message=None):
 
 
 def send_request(method, path, payload=None):
+    #print "sending request to %s with payload %s" % (path, str(payload))
     url = config.API_BASE_URL + path
     message = path + method + "application/json"
     headers = {
@@ -73,40 +74,40 @@ def ping():
     return send_request('GET','/').json()
 
 
+class Customer:
+
+    def __init__(self, **kwargs):
+        for k,v in _filter_params(kwargs, ('id','name', 'phone_number', 'address1', 'address2','city','state','country','pincode')).iteritems():
+            setattr(self, k, v)
+
+
 class Package:
 
-    def __init__(self, id):
-        details = Package.get(id)
-        if details['status']==404:
-            raise NameError("No package found with id %s" % id )
-        for k,v in details.iteritems():
+    def __init__(self, **kwargs):
+        for k,v in _filter_params(kwargs, ('id','contents', 'delivery_date','status', 'gross_amount', 'tracking_url', 'customer_form_url', 'customer')).iteritems():
+            if k is 'customer' and v is not None and isinstance(v,dict):
+                setattr(self, k, Customer(**v) )
             setattr(self, k, v)
 
     @staticmethod
     def create( *args, **kwargs):
-        """Create a package
-
-        :param products:
-        A list of tuples. First element should be the product id, second element should be an integer denoting the quantity
-
-        :param customer_id:
-        An optional argument denoting the customer id to associate the package with. If this is not provided, the response json will contain
-        an url pointing to a form for creating a customer entry
-        """
         customer_id=None
         if 'customer_id' in kwargs:
             customer_id=kwargs['customer_id']
         products=list(args)
         response = send_request('POST', '/v1/packages', {'products': products, 'customer_id': customer_id })
-        result=response.json()
-        print result
-        if 'next' in kwargs:
-            next=kwargs['next']
-            if next:
-                if not next.startswith("http://www."):
-                    next="http://www."+next
-                result['url']+='&next=%s' % next
-        return result
+        if response.status_code in (200,201):
+            pkg=response.json()['package']
+            if 'next' in kwargs:
+                next=kwargs['next']
+                if next:
+                    if not next.startswith("http://www."):
+                        next="http://www."+next
+                    pkg['customer_form_url']+='&next=%s' % next
+            return Package(**pkg)
+        else:
+            print response.json()
+            return None
 
     @staticmethod
     def bulk_create(packages, next=None):
@@ -119,36 +120,35 @@ class Package:
                                      {'products': [('4w452f23423',5)], 'customer_id': 'xasdgawetfs' } ] )
         """
         response = send_request('POST', '/v1/bulk/packages', {'packages': packages })
-        results = response.json()
-        if next:
-            if not next.startswith("http://www."):
-                next="http://www."+next
-            for result in results:
-                if 'url' in result:
-                    result['url']+='&next=%s' % next
-        
-
-        return results
-
-    
-    class of_product:
-
-        def __init__(self, product_name, quantity):
-            id=Product.id(product_name)
-            if id is None:
-                raise NameError("No product found with name matching %s" % product_name)
-            self.product=Product.id(product_name)
-            self.quantity=quantity
-
-        def create(self, customer_id=None, next=None):
-            products=[(self.product, self.quantity)]
-            response = send_request('POST', '/v1/packages', {'products': products, 'customer_id': customer_id })
-            result=response.json()
+        if response.status_code in (200,201):
+            packages=[]
+            pkgs = response.json()['packages']
             if next:
                 if not next.startswith("http://www."):
                     next="http://www."+next
-                result['url']+='&next=%s' % next
-            return result
+                for pkg in pkgs:
+                    if 'customer_form_url' in pkg:
+                        pkg['customer_form_url']+='&next=%s' % next
+            for pkg in pkgs:
+                packages.append(Package(**pkg ))
+            return (packages, response.json()['errors'])
+        else:
+            print response.json()
+            return []
+
+    
+    class product:
+
+        def __init__(self, product_name, quantity):
+            id=Product.get_id(product_name)
+            if id is None:
+                raise NameError("No product found with name matching %s" % product_name)
+            self.product=id
+            self.quantity=quantity
+
+        def create(self, customer_id=None, next=None):
+            return Package.create( (self.product, self.quantity), customer_id=customer_id, next=next )
+
 
         def bulk_create( self,  no_of_packages=1, customer_ids=None, next=None):
             """Convenience method for adding packages in batch where each package has only one product
@@ -164,19 +164,19 @@ class Package:
             else:
                 return Package.bulk_create( [ {'products':[(self.product, self.quantity )], 'customer_id': id } for id in customer_ids ], next=next )
 
-    class of_products:
+    class products:
 
         def __init__(self, *args):
             self.products=[]
             for p,q in args:
-                id=Product.id(p)
+                id=Product.get_id(p)
                 if id is None:
                     raise Exception("No product found with name matching %s" % p)
                 self.products.append((id,q))
 
 
         def create(self, customer_id=None, next=None):
-            return Package.create(products= self.products, customer_id=customer_id, next=next)
+            return Package.create(*self.products, customer_id=customer_id, next=next)
 
         def bulk_create (self,  no_of_packages=None, customer_ids=None, next=None):
             """Convenience method for adding batch packages
@@ -195,24 +195,30 @@ class Package:
     @staticmethod
     def all():
         response = send_request('GET', '/v1/packages')
-        if 'products' in response.json():
-            return response.json()
+        res=response.json()
+        if 'packages' in res:
+            return [ Package(**pkg) for pkg in res['packages'] ]
         else:
-            return response.json()
+            print res
+            return []
 
     @staticmethod
     def get(id):
         response = send_request('GET', '/v1/packages/%s' %id)
-        return response.json()
+        res=response.json()
+        if response.status_code in (200, 201):
+            return Package(**res)
+        else:
+            return None
 
-    @staticmethod
-    def edit(id, payload):
-        response = send_request('PUT', '/v1/packages/%s' % id, payload)
-        return response.json()
 
 
 
 class Product:
+
+    def __init__(self, **kwargs):
+        for k,v in _filter_params(kwargs, ('id','name', 'design_file','status', 'quantity', 'third_party')).iteritems():
+            setattr(self, k, v)
 
     @staticmethod
     def create(name=None,  third_party=False, template_id=None ):
@@ -222,54 +228,52 @@ class Product:
         if template_id:
             request['template_id']=template_id
         response = send_request('POST', '/v1/products', request)
-        result=_filter_params(response.json(), ('id','name', 'design_file','status', 'quantity', 'third_party') )
-        return result
+        if response.status_code in (200, 201, 302):
+            return Product(**_filter_params(response.json(), ('id','name', 'design_file','status', 'quantity', 'third_party') ) )
+        else:
+            print response.json()
+            return None
 
     @staticmethod
     def all():
         response = send_request('GET', '/v1/products')
         if 'products' in response.json():
-            return [ _filter_params(product, ('id','name', 'design_file','status', 'quantity', 'third_party')) for product in response.json()['products'] ]
+            return [ Product(**_filter_params(product, ('id','name', 'design_file','status', 'quantity', 'third_party'))) for product in response.json()['products'] ]
         else:
-            return response.json()
+            return []
 
     @staticmethod
     def fetch(**params):
         response = send_request('GET', '/v1/products', params)
         if 'products' in response.json():
-            return [ _filter_params(product, ('id','name', 'design_file','status', 'quantity', 'third_party')) for product in response.json()['products'] ]
+            return [ Product(**_filter_params(product, ('id','name', 'design_file','status', 'quantity', 'third_party'))) for product in response.json()['products'] ]
         else:
-            return response.json()
+            return []
 
     @staticmethod
     def fetch_one(**params):
         params['one']=True
         response = send_request('GET', '/v1/products', params)
-        if 'products' in response.json():
-            return [ _filter_params(product, ('id','name', 'design_file','status', 'quantity', 'third_party')) for product in response.json()['products'] ]
+        if 'product' in response.json():
+            return Product(**_filter_params(response.json()['product'], ('id','name', 'design_file','status', 'quantity', 'third_party'))) 
         else:
-            return response.json()
+            return None
 
     @staticmethod
-    def id(name=None, **params):
+    def get_id(name=None, **params):
         if name:
             params['name']=name
         result = Product.fetch_one(**params)
-        if 'id' not in result:
+        if isinstance(result, Product):
+            return result.id
+        else:
             return None
-        return result['id']
+
+    def __repr__(self):
+        return self.name
 
 
 
 if __name__ == '__main__':
-    #products = [ product for product in get_products() if product['quantity'] > 0 ]
-    #products = [ (product['id'], product['name'] )for product in get_products() ]
-    print Product.create("My 3rd party tshirt1", third_party=True )
-    #print products
-    #response= add_package( [ (products[0]['id'],1), (products[1]['id'], 2) ] )
-    #print len(response[])
-    #print add_multiple_packages( [ { 'products': [ (products[0]['id'],1),(products[1]['id'],1) ], 'customer_id': None },
-                                 #{'products': [(products[1]['id'],3)], 'customer_id': None } ] )
-
-    #print batch_package(products[1]['id'],2,4)
+    pass
 
