@@ -83,7 +83,7 @@ class Package:
             setattr(self, k, v)
 
     @staticmethod
-    def create( products, customer_id=None,next=None):
+    def create( *args, **kwargs):
         """Create a package
 
         :param products:
@@ -93,12 +93,19 @@ class Package:
         An optional argument denoting the customer id to associate the package with. If this is not provided, the response json will contain
         an url pointing to a form for creating a customer entry
         """
+        customer_id=None
+        if 'customer_id' in kwargs:
+            customer_id=kwargs['customer_id']
+        products=list(args)
         response = send_request('POST', '/v1/packages', {'products': products, 'customer_id': customer_id })
         result=response.json()
-        if next:
-            if not next.startswith("http://www."):
-                next="http://www."+next
-            result['url']+='&next=%s' % next
+        print result
+        if 'next' in kwargs:
+            next=kwargs['next']
+            if next:
+                if not next.startswith("http://www."):
+                    next="http://www."+next
+                result['url']+='&next=%s' % next
         return result
 
     @staticmethod
