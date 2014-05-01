@@ -215,21 +215,21 @@ class Package:
 class Product:
 
     @staticmethod
-    def create(name=None,  third_party=False, template_id=None, ):
+    def create(name=None,  third_party=False, template_id=None ):
         request={'third_party': third_party}
         if name:
             request['name']=name
         if template_id:
             request['template_id']=template_id
         response = send_request('POST', '/v1/products', request)
-        result=response.json()
+        result=_filter_params(response.json(), ('id','name', 'design_file','status', 'quantity', 'third_party') )
         return result
 
     @staticmethod
     def all():
         response = send_request('GET', '/v1/products')
         if 'products' in response.json():
-            return [ _filter_params(product, ('id','name','design_status', 'quantity', 'third_party')) for product in response.json()['products'] ]
+            return [ _filter_params(product, ('id','name', 'design_file','status', 'quantity', 'third_party')) for product in response.json()['products'] ]
         else:
             return response.json()
 
@@ -237,7 +237,7 @@ class Product:
     def fetch(**params):
         response = send_request('GET', '/v1/products', params)
         if 'products' in response.json():
-            return [ _filter_params(product, ('id','name','design_status', 'quantity', 'third_party')) for product in response.json()['products'] ]
+            return [ _filter_params(product, ('id','name', 'design_file','status', 'quantity', 'third_party')) for product in response.json()['products'] ]
         else:
             return response.json()
 
@@ -246,7 +246,7 @@ class Product:
         params['one']=True
         response = send_request('GET', '/v1/products', params)
         if 'products' in response.json():
-            return [ _filter_params(product, ('id','name','design_status', 'quantity', 'third_party')) for product in response.json()['products'] ]
+            return [ _filter_params(product, ('id','name', 'design_file','status', 'quantity', 'third_party')) for product in response.json()['products'] ]
         else:
             return response.json()
 
