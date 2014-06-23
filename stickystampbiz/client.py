@@ -84,7 +84,7 @@ class Customer:
 class Package:
 
     def __init__(self, **kwargs):
-        for k,v in _filter_params(kwargs, ('id','contents', 'delivery_date','status', 'gross_amount', 'tracking_url', 'customer_form_url', 'customer')).iteritems():
+        for k,v in _filter_params(kwargs, ('id','contents','status', 'gross_amount', 'tracking_url', 'customer_form_url', 'recipient')).iteritems():
             if k is 'customer' and v is not None and isinstance(v,dict):
                 setattr(self, k, Customer(**v) )
             setattr(self, k, v)
@@ -214,22 +214,19 @@ class Package:
 
 
 
+
 class Product:
 
     def __init__(self, **kwargs):
-        for k,v in _filter_params(kwargs, ('id','name', 'design_file','status', 'quantity', 'third_party')).iteritems():
+        for k,v in _filter_params(kwargs, ('id','name', 'properties','status', 'quantity', 'third_party')).iteritems():
             setattr(self, k, v)
 
     @staticmethod
-    def create(name=None,  third_party=False, template_id=None ):
-        request={'third_party': third_party}
-        if name:
-            request['name']=name
-        if template_id:
-            request['template_id']=template_id
+    def create(name, template_code, third_party=False, properties={} ):
+        request={'third_party': third_party, 'name': name, 'template_code': template_code, 'properties': properties}
         response = send_request('POST', '/v1/products', request)
         if response.status_code in (200, 201, 302):
-            return Product(**_filter_params(response.json(), ('id','name', 'design_file','status', 'quantity', 'third_party') ) )
+            return Product(**_filter_params(response.json(), ('id','name', 'design_id','status', 'quantity', 'third_party') ) )
         else:
             print response.json()
             return None
@@ -237,6 +234,7 @@ class Product:
     @staticmethod
     def all():
         response = send_request('GET', '/v1/products')
+        print response
         if 'products' in response.json():
             return [ Product(**_filter_params(product, ('id','name', 'design_file','status', 'quantity', 'third_party'))) for product in response.json()['products'] ]
         else:
