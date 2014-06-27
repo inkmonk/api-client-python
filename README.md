@@ -134,6 +134,45 @@ A `Merchandise` object with the given id
 	
 	print Merchandise.get(1).category
 
+####Fetching skus belonging to the merchandise####
+
+If no params are supplied, the method returns all the skus belonging to the merchandise. Otherwise if filters based on the params and returns a filtered list of skus.
+
+	merchandise.skus(**params)
+
+##### Response #####
+
+A list of `SKU` objects
+
+#####Example usage:#####
+	
+	merchandise=Merchandise.get(2)
+	print "Printing all skus belonging to %s"%merchandise.name
+	for sku in merchandise.skus():
+		print sku.id
+	print "Printing the skus belonging to %s which are Red in color and have size M"%merchandise.name
+	for sku in merchandise.skus(color='Red', size='M'):
+		print sku.id
+
+####Fetching exacting one sku belonging to the merchandise####
+
+It filters based on the params and returns a filtered list of skus.
+
+	merchandise.skus(**params)
+
+##### Response #####
+
+A list of `SKU` objects
+
+#####Example usage:#####
+	
+	merchandise=Merchandise.get(2)
+	print "Printing all skus belonging to %s"%merchandise.name
+	for sku in merchandise.skus():
+		print sku.id
+	print "Printing the skus belonging to %s which are Red in color and have size M"%merchandise.name
+	for sku in merchandise.skus(color='Red', size='M'):
+		print sku.id
 ----------------------------------------------------------------------------------------------------------------------------
 
 
