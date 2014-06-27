@@ -276,4 +276,93 @@ A `Shipment` object
 
 	shipment2 = Shipment.create( recipient={ 'name': 'Isaac', 'email': 'isaac@stickystamp.com', 'address1': 'No 12, Krishnan Street', 'address2': 'Govindan Road, West Mambalam', 'city': 'Chennai', 'state': 'Tamilnadu', 'pincode': '600033', 'contact_number': '8888888888' }, contents= [ (Merchandise.get(1).sku(color='Red', size='M' ),1), ('M2V2',1) ] )
 
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+
+##GrantForm##
+
+A grantform is an url for a one time form that you provide to your customers/recipients and ask them to fill out their shipping address. You can also let them choose between different SKUS. For eg: You can add 10 different SKUs ( Red Medium, Blue Medium, Red Large etc) of the merchandise 'Contest Tshirt1' to a field in the form. You can also specify the quantity of items that can be chosen from that slot. Your customer will then see a field in the form with all these choices allowing him to choose between the variations.  You can also add multiple such fields to the form
+
+### Attributes ###
+
+`id` - The id of the grantform
+
+`token` - a unique string which is passed as a part of the url
+
+`url` - The URL of the form that you need to send to your recipient
+
+`is_valid` - This becomes false if the recipient has filled up the form or if the date of expiry has crossed
+
+`converted` - A boolean which denotes whether the recipient has submitted the details converting the GrantForm into a shipment
+
+`expires_on` - The date on which this form will expire
+
+`mailed_to` - Set this field to remember the email address to which you mailed this form url to
+
+`choices` - A list of tuples. Each tuple has 2 elements. The first element is a list of skus which you want to give as choices for that field. The second element denotes the quantity of skus that you want to let the user choose in that field.
+
+`shipment` - A shipment object. This gets set when the recipient fills up the details and submits the form. This shipment object contains all the details submitted by the recipient
+
+
+
+####Getting all shipments####
+
+	GrantForm.all()
+
+##### Response #####
+
+A list of `GrantForm` objects
+
+#####Example usage:#####
 	
+	for grantform in GrantForm.all():
+		print grantform.url
+		if grantform.converted:
+			print grantform.shipment.id, grantform.shipment.recipient, grantform.shipment.contents
+		else:
+			for skus,quantity in grantform.choices:
+				print quantity
+				for sku in skus:
+					print sku.id
+
+####Getting a specific grantform####
+
+	GrantForm.get(id)
+
+##### Response #####
+
+A `GrantForm` object with the given id
+
+#####Example usage:#####
+
+	grantform = GrantForm.get(1)
+	if grantform.converted:
+		print grantform.shipment.id, grantform.shipment.recipient, grantform.shipment.contents
+	else:
+		for skus,quantity in grantform.choices:
+			print quantity
+			for sku in skus:
+				print sku.id
+
+####Creating a grantform####
+
+	GrantForm.create(choices, days_till_expiry=90, mailed_to=None)
+
+The arg `choices` expects a list of tuples. The first element should be a list of skus. The list can either be made of sku objects or sku id strings. The second element should be the number of items the recipient can be allowed to choose from the list.
+
+The arg `days_till_expiry` is used to set the validity of the form. By default it is 90 days.
+
+The arg `mailed_to` is used to set the mail address to which you will mail the form url to. 
+
+
+##### Response #####
+
+A `GrantForm` object
+
+#####Example usage:#####
+
+	grantform = GrantForm.create( choices= [ (['M1V1','M1V2','M1V3'],2), (['M2V2','M2V4'],1) ] )
+
+
