@@ -181,14 +181,23 @@ A recipient is a recipient address to which you send your shipments to.
 ### Attributes ###
 
 `id` - The id of the recipient
+
 `name` - The name of the recipient
+
 `email` - The email address of the recipient
+
 `address1` -  First line of address ( Door no, street)
+
 `address2` - Second line of address
+
 `city` - City of residence of the recipient
+
 `state` - State of residence of the recipient
+
 `country` - Country of residence of the recipient
+
 `pincode` - Pincode or Zipcode
+
 `contact_number` - Contact number of the recipient
 
 
