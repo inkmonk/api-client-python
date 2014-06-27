@@ -10,11 +10,22 @@ Now run the setup.py with `python setup.py install`.
 
 ## Usage ##
 In your python code or the interpreter, just add this import line
+
 `from stickystamp import Merchandise, SKU, Recipient, Shipment, Grant`
 
 -----------------------------------------------------------------------------------------------------------
 
+
+## SKU ##
+
+A SKU is a stock keeping unit. Each SKU has a unique set of parameters. You Merchandise might have multiple SKUs.
+For exampe, "Contest1 Tshirt" might be a merchandise you had created. It could have several SKUS in it based on color and size like 
+'Red L', 'Red XL' , 'Blue M', 'Blue XL'. Each SKU is identified by a unique id
+
+-----------------------------------------------------------------------------------------------------------
+
 ## Merchandise ##
+
 
 ### Attributes ###
 
