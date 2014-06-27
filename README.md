@@ -307,7 +307,7 @@ A grantform is an url for a one time form that you provide to your customers/rec
 
 
 
-####Getting all shipments####
+####Getting all grantforms####
 
 	GrantForm.all()
 
