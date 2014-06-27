@@ -18,9 +18,67 @@ In your python code or the interpreter, just add this import line
 
 ## SKU ##
 
-A SKU is a stock keeping unit. Each SKU has a unique set of parameters. You Merchandise might have multiple SKUs.
+A SKU is a stock keeping unit. Each instance of SKU (denoted henceforth as sku in lowercase ) has a unique set of parameters. You Merchandise might have multiple skus.
 For exampe, "Contest1 Tshirt" might be a merchandise you had created. It could have several SKUS in it based on color and size like 
 'Red L', 'Red XL' , 'Blue M', 'Blue XL'. Each SKU is identified by a unique id
+
+### Attributes ###
+
+`id` - The id of the sku object
+
+`category` - The category of the sku. It can be 'tshirt_merchandise' or 'sticker_merchandise' or 'sticker_sheet_merchandise' or 'postcard_merchandise' or just 'sku' ( in case the sku doesn't belong to any merchandise)
+
+`name` - A name for the SKU. This is usually set only if the sku doesn't belong to any merchandise
+
+`merchandise_name` - The name of the merchandise to which the SKU belongs
+
+`merchandise_id` - The id of the merchandise to which the SKU belongs
+
+The following attributes are set only if the merchandise category is `tshirt_merchandise`
+
+`color` - Tshirt color
+
+`size` - Tshirt size ( 'S', 'M' etc)
+
+`tshirt_type` - Tshirt type ( 'Cotton Roundneck', 'Polycotton Roundneck' etc)
+
+The following attributes are set only if the merchandise category is `sticker_merchandise` or `sticker_sheet_merchandise`
+
+`translucent` - Set to True if the sticker or sticker sheet is translucent
+
+The following attributes are set only if the merchandise category is `sticker_merchandise` or `sticker_sheet_merchandise` or `postcard_merchandise`:
+
+`dimension` - Dimension of the sticker/sheet/card
+
+`dimension_unit` -  The unit in which the dimension is expressed. Default is inch
+
+
+####Getting All SKUS####
+
+`SKU.all()`
+
+##### Response #####
+
+A list of `SKU` objects
+
+#####Example usage:#####
+	
+	skus = SKU.all()
+	for sku in skus:
+		print sku.id, sku.category
+
+####Getting A Specific SKUS####
+
+	SKU.get(id)
+
+##### Response #####
+
+A `SKU` object with the given id
+
+#####Example usage:#####
+	
+	print SKU.get(1).category
+
 
 -----------------------------------------------------------------------------------------------------------
 
