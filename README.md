@@ -1,20 +1,20 @@
-#CMYKsoup#
+#StickyStamp#
 
-The Python client for interacting with the CMYKsoup API hosted at api.cmyksoup.com
+The Python client for interacting with the StickyStamp API hosted at api.stickystamp.com
 
 ## Installation ##
-Download the zip file. Inside the folder named cmyksoup, there is a file called default_config.py. Change its name to config.py and set the values of `API_KEY` and `API_SECRET_ACCESS_KEY` with the keys you obtained from us. 
+Download the zip file. Inside the folder named stickystamp, there is a file called default_config.py. Change its name to config.py and set the values of `API_KEY` and `API_SECRET_ACCESS_KEY` with the keys you obtained from us. 
 Now run the setup.py with `python setup.py install`. 
 
 -----------------------------------------------------------------------------
 
 ## Usage ##
 In your python code or the interpreter, just add this import line
-`from cmyksoup import *`
+`from stickystamp import Merchandise, SKU, Recipient, Shipment, Grant`
 
 -----------------------------------------------------------------------------------------------------------
 
-## Product ##
+## Merchandise ##
 
 ### Attributes ###
 
