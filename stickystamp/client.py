@@ -290,7 +290,7 @@ class Shipment:
                 return Shipment(**Shipment._filter_params(result['shipment']) ) 
         return None        
 
-class Grant:
+class GrantForm:
 
     def __init__(self, id=None, token=None, url=None, is_valid=None, converted=None, expires_on=None, shipment=None, mailed_to=None, choices=None):
         self.id=id
@@ -306,18 +306,18 @@ class Grant:
             self.shipment=Shipment(**Shipment._filter_params(shipment) ) 
 
     @staticmethod
-    def _filter_params(grant):
-        return filter_params(grant, ('choices', 'days_till_expiry', 'mailed_to', 'id','token','url','is_valid', 
+    def _filter_params(grantform):
+        return filter_params(grantform, ('choices', 'days_till_expiry', 'mailed_to', 'id','token','url','is_valid', 
                     'converted', 'expires_on', 'shipment', 'mailed_to') )
 
 
     @staticmethod
     def all():
-        response = send_request('GET', '/v1/grants')
+        response = send_request('GET', '/v1/grantforms')
         if response.status_code==200:
             result=response.json()
             if result['status']=='success':
-                return [ Grant(**Grant._filter_params(item) ) for item in result['grants'] ]
+                return [ GrantForm(**GrantForm._filter_params(item) ) for item in result['grantforms'] ]
         return []
 
     @staticmethod
@@ -331,23 +331,23 @@ class Grant:
                 elif isinstance(sk,str):
                     sku_ids.append(sk)
             sku_id_choices.append( (sku_ids,qty) )
-        response = send_request('POST', '/v1/grants', {'choices': sku_id_choices, 'days_till_expiry': days_till_expiry })
+        response = send_request('POST', '/v1/grantforms', {'choices': sku_id_choices, 'days_till_expiry': days_till_expiry })
         if response.status_code==200:
             result=response.json()
             if result['status']=='success':
-                return Grant(**Grant._filter_params(result['grant']))
+                return GrantForm(**GrantForm._filter_params(result['grantform']))
             else:
                 raise Exception(result['error'])
         return None
 
     @staticmethod
     def get(id):
-        response = send_request('GET', '/v1/grants/%s'%id)
+        response = send_request('GET', '/v1/grantforms/%s'%id)
         if response.status_code==200:
             result=response.json()
             print result
             if result['status']=='success':
-                return Grant(**Grant._filter_params(result['grant']) ) 
+                return GrantForm(**GrantForm._filter_params(result['grantform']) ) 
         return None  
 
 
