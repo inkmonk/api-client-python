@@ -147,32 +147,29 @@ A list of `SKU` objects
 #####Example usage:#####
 	
 	merchandise=Merchandise.get(2)
-	print "Printing all skus belonging to %s"%merchandise.name
+	print "Printing all skus belonging to merchandise 2"
 	for sku in merchandise.skus():
 		print sku.id
-	print "Printing the skus belonging to %s which are Red in color and have size M"%merchandise.name
-	for sku in merchandise.skus(color='Red', size='M'):
+	print "Printing the skus belonging to merchandise 2 which are Red in color"
+	for sku in merchandise.skus(color='Red'):
 		print sku.id
 
 ####Fetching exacting one sku belonging to the merchandise####
 
-It filters based on the params and returns a filtered list of skus.
+Use this method if you want to ensure that exactly one sku object matches the filter params. If there is no match or if there is more than one match, this method returns None.
 
-	merchandise.skus(**params)
+	merchandise.sku(**params)
 
 ##### Response #####
 
-A list of `SKU` objects
+A `SKU` object
 
 #####Example usage:#####
 	
 	merchandise=Merchandise.get(2)
-	print "Printing all skus belonging to %s"%merchandise.name
-	for sku in merchandise.skus():
-		print sku.id
-	print "Printing the skus belonging to %s which are Red in color and have size M"%merchandise.name
-	for sku in merchandise.skus(color='Red', size='M'):
-		print sku.id
+	sku = merchandise.sku(color='Red', size='M')
+	print sku.id
+
 ----------------------------------------------------------------------------------------------------------------------------
 
 
