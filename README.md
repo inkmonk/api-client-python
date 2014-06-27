@@ -53,9 +53,9 @@ The following attributes are set only if the merchandise category is `sticker_me
 `dimension_unit` -  The unit in which the dimension is expressed. Default is inch
 
 
-####Getting All SKUS####
+####Getting all skus####
 
-`SKU.all()`
+	SKU.all()
 
 ##### Response #####
 
@@ -67,7 +67,7 @@ A list of `SKU` objects
 	for sku in skus:
 		print sku.id, sku.category
 
-####Getting A Specific SKUS####
+####Getting a specific sku####
 
 	SKU.get(id)
 
@@ -84,22 +84,57 @@ A `SKU` object with the given id
 
 ## Merchandise ##
 
+The designs you upload become a merchandise. A merchandise might have many skus in it with varying properties. Eg, 'FIFA 2014 Tshirt' is a merchandise. 'FIFA 2014 Tshirt - Red XL', 'FIFA 2014 Tshirt - Blue M' are skus belonging to that merchandise. 
 
 ### Attributes ###
 
-`id` - The id of the product used in our DB
+`id` - The id of the merchandise
 
-`name` - A unique name for the product ( unique for a given user )
+`name` - A unique name for the merchandise ( unique for a given user )
 
-`design_file` - The location of the design file
+`category` - The category of the merchandise. It can be 'tshirt' or 'sticker' or 'sticker_sheet' or 'postcard'
 
-`status` - The status of the design file 
 
-`quantity` - The quantity of items of the product available in stock
+The following attributes are set only if the merchandise category is `tshirt`
 
-`third_party` - set to True if the product is from a 3rd party manufacturer
+`color` - Tshirt color
 
------------------------------------------------------------------------------
+`tshirt_type` - Tshirt type ( 'Cotton Roundneck', 'Polycotton Roundneck' etc)
+
+
+The following attributes are set only if the merchandise category is `sticker` or `sticker_sheet` or `postcard`:
+
+`dimension` - Dimension of the sticker/sheet/card
+
+`dimension_unit` -  The unit in which the dimension is expressed. Default is inch
+
+####Getting all merchandise####
+
+	Merchandise.all()
+
+##### Response #####
+
+A list of `Merchandise` objects
+
+#####Example usage:#####
+	
+	merchs = Merchandise.all()
+	for merch in merchs:
+		print merch.id, merch.category, merch.name
+
+####Getting a specific merchandise####
+
+	Merchandise.get(id)
+
+##### Response #####
+
+A `Merchandise` object with the given id
+
+#####Example usage:#####
+	
+	print Merchandise.get(1).category
+
+----------------------------------------------------------------------------------------------------------------------------
 
 
 #### Creating a product ####

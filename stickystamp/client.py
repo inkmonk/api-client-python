@@ -92,13 +92,14 @@ def ping():
 
 class Merchandise:
 
-    def __init__(self, category, id, name=None, private_label=None, tshirt_type=None, dimension=None, dimension_unit=None ):
+    def __init__(self, category, id, name=None, private_label=None, tshirt_type=None, color=None, dimension=None, dimension_unit=None ):
         self.category=category
         self.id=id
         self.name=name
         if self.category  == 'tshirt':
             self.private_label= (int(private_label)!=0 )
             self.tshirt_type = tshirt_type
+            self.color = color
         elif self.category =='sticker' or self.category == 'sticker_sheet':
             self.dimension=dimension
             self.dimension_unit=dimension_unit
@@ -108,7 +109,7 @@ class Merchandise:
 
     @staticmethod
     def _filter_params(merch):
-        return filter_params(merch, ('id','category','name','private_label','tshirt_type','dimension','dimension_unit'))
+        return filter_params(merch, ('id','category','name','private_label','tshirt_type','dimension','dimension_unit', 'color'))
 
     @staticmethod
     def all():
