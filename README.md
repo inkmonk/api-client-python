@@ -13,6 +13,8 @@ In your python code or the interpreter, just add this import line
 
 `from stickystamp import Merchandise, SKU, Recipient, Shipment, Grant`
 
+Use the factory methods documented below for interacting with the objects. Each method call is actually a request to Stickystamp API. Do not instantiate the objects yourself. The objects will have the relevant data only if instantiated using the factory methods. 
+
 -----------------------------------------------------------------------------------------------------------
 
 
@@ -169,3 +171,100 @@ A `SKU` object
 	merchandise=Merchandise.get(2)
 	sku = merchandise.sku(color='Red', size='M')
 	print sku.id
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+## Recipient ##
+
+A recipient is a recipient address to which you send your shipments to.
+
+### Attributes ###
+
+`id` - The id of the recipient
+`name` - The name of the recipient
+`email` - The email address of the recipient
+`address1` -  First line of address ( Door no, street)
+`address2` - Second line of address
+`city` - City of residence of the recipient
+`state` - State of residence of the recipient
+`country` - Country of residence of the recipient
+`pincode` - Pincode or Zipcode
+`contact_number` - Contact number of the recipient
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+
+## Shipment ##
+
+A shipment is the package that you ship to a recipient. It has a recipient ( Name, email and address ) and some contents ( A set of skus )
+
+### Attributes ###
+
+`id` - The id of the shipment
+
+`recipient` - A recipient object with the attributes set
+
+`status` - Status of the shipment
+
+`tracking_url` - The courier tracking url of the shipment
+
+`shipping_charges` - Charges levied for shipping
+
+`net_amount` - Shipping charges + packing cost
+
+`tax` - Tax amount
+
+`gross_amount` - Total bill for the shipment
+
+`contents` - A list of tuples. Each tuple has two elements. First element is a sku object. The second element is the quantity of that sku present in the shipment.
+
+
+####Getting all shipments####
+
+	Shipment.all()
+
+##### Response #####
+
+A list of `Shipment` objects
+
+#####Example usage:#####
+	
+	for shipment in Shipment.all():
+		print shipment.recipient.name
+		for sku,quantity in shipment.contents:
+			print sku.id, sku.merchandise_name, quantity
+
+####Getting a specific shipment####
+
+	Shipment.get(id)
+
+##### Response #####
+
+A `Shipment` object with the given id
+
+#####Example usage:#####
+
+	for sku,quantity in Shipment.get(1).contents:
+		print sku.id, sku.merchandise_name, quantity
+
+####Creating a shipment####
+
+	Shipment.create(recipient, contents)
+
+The arg `recipient` expects a dictionary with keys as the attributes of `Recipient` ie `name`, `email`, `address1` etc
+
+The arg `contents` expects a list of tuples. The first element of tuple can either be a sku object or the id of a sku object. The second element is the quantity of that sku to be added to the shipment
+
+##### Response #####
+
+A `Shipment` object
+
+#####Example usage:#####
+
+	shipment1 = Shipment.create( recipient={ 'name': 'Surya', 'email': 'surya@stickystamp.com', 'address1': 'No 12, Krishnan Street', 'address2': 'Govindan Road, West Mambalam', 'city': 'Chennai', 'state': 'Tamilnadu', 'pincode': '600033', 'contact_number': '8888888888' }, contents= [ ('M1V1',2), ('M2V2',1) ] )
+
+	shipment2 = Shipment.create( recipient={ 'name': 'Isaac', 'email': 'isaac@stickystamp.com', 'address1': 'No 12, Krishnan Street', 'address2': 'Govindan Road, West Mambalam', 'city': 'Chennai', 'state': 'Tamilnadu', 'pincode': '600033', 'contact_number': '8888888888' }, contents= [ (Merchandise.get(1).sku(color='Red', size='M' ),1), ('M2V2',1) ] )
+
+	
