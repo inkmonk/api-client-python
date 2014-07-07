@@ -11,7 +11,7 @@ Now run the setup.py with `python setup.py install`.
 ## Usage ##
 In your python code or the interpreter, just add this import line
 
-`from stickystamp import Merchandise, SKU, Recipient, Shipment, Grant`
+`from stickystamp import Merchandise, SKU, Recipient, Shipment, GrantForm`
 
 Use the factory methods documented below for interacting with the objects. Each method call is actually a request to Stickystamp API. Do not instantiate the objects yourself. The objects will have the relevant data only if instantiated using the factory methods. 
 
