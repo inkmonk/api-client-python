@@ -160,7 +160,7 @@ A list of `SKU` objects
 	for sku in merchandise.skus(color='Red'):
 		print sku.id
 
-####Fetching exacting one sku belonging to the merchandise####
+####Fetching exactly one sku belonging to the merchandise####
 
 Use this method if you want to ensure that exactly one sku object matches the filter params. If there is no match or if there is more than one match, this method returns None.
 
@@ -173,7 +173,7 @@ A `SKU` object
 #####Example usage:#####
 	
 	merchandise=Merchandise.get("T1-CNTS1")
-	sku = merchandise.sku(color='Red', size='M')
+	sku = merchandise.sku(color='red', size='small')
 	print sku.id
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -319,7 +319,7 @@ In the second case, you need to provide the merchandise code, which can also be 
 
 ##GrantForm##
 
-A grantform is an url for a one time form that you provide to your customers/recipients and ask them to fill out their shipping address. You can also let them choose between different SKUS. For eg: You can add 10 different SKUs ( Red Medium, Blue Medium, Red Large etc) of the merchandise 'Contest Tshirt1' to a field in the form. You can also specify the quantity of items that can be chosen from that slot. Your customer will then see a field in the form with all these choices allowing him to choose between the variations.  You can also add multiple such fields to the form
+A grantform is an url for a one time form that you provide to your customers/recipients and ask them to fill out their shipping address. You can also let them choose between different SKUs. For eg: You can add 10 different SKUs ( Red Medium, Blue Medium, Red Large etc) of the merchandise 'Contest Tshirt1' to a field in the form. You can also specify the quantity of items that can be chosen from that slot. Your customer will then see a field in the form with all these choices allowing him to choose between the variations.  You can also add multiple such fields to the form
 
 ### Attributes ###
 
@@ -386,7 +386,7 @@ A `GrantForm` object with the given id
 
 	GrantForm.create(choices, days_till_expiry=90, mailed_to=None)
 
-The arg `choices` expects a list of tuples. The first element should be a list of skus. The list can either be made of sku objects or sku id strings. The second element should be the number of items the recipient can be allowed to choose from the list.
+The arg `choices` expects a list of tuples. The first element of each tuple should in turn be a list of skus. The list can either be made of sku objects or sku id strings. The second element should be the number of items the recipient can be allowed to choose from the list.
 
 The arg `days_till_expiry` is used to set the validity of the form. By default it is 90 days.
 
