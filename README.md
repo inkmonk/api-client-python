@@ -128,13 +128,15 @@ A list of `Merchandise` objects
 
 	Merchandise.get(id)
 
+This id can be obtained from the site for each merchandise. Or calling `Merchandise.all()` will list all the merchandise names with this id for each merchandise within angular braces.
+
 ##### Response #####
 
 A `Merchandise` object with the given id
 
 #####Example usage:#####
 	
-	print Merchandise.get(1).category
+	print Merchandise.get("PC1-WCRD").category
 
 ####Fetching skus belonging to the merchandise####
 
@@ -148,7 +150,7 @@ A list of `SKU` objects
 
 #####Example usage:#####
 	
-	merchandise=Merchandise.get(2)
+	merchandise=Merchandise.get("PC1-WCRD")
 	print "Printing all skus belonging to merchandise 2"
 	for sku in merchandise.skus():
 		print sku.id
@@ -168,7 +170,7 @@ A `SKU` object
 
 #####Example usage:#####
 	
-	merchandise=Merchandise.get(2)
+	merchandise=Merchandise.get("T1-CNTS1")
 	sku = merchandise.sku(color='Red', size='M')
 	print sku.id
 
@@ -272,9 +274,34 @@ A `Shipment` object
 
 #####Example usage:#####
 
-	shipment1 = Shipment.create( recipient={ 'name': 'Surya', 'email': 'surya@stickystamp.com', 'address1': 'No 12, Krishnan Street', 'address2': 'Govindan Road, West Mambalam', 'city': 'Chennai', 'state': 'Tamilnadu', 'pincode': '600033', 'contact_number': '8888888888' }, contents= [ ('M1V1',2), ('M2V2',1) ] )
+	shipment1 = Shipment.create( recipient={ 'name': 'Surya', 'email': 'surya@stickystamp.com', 'address1': 'No 12, Krishnan Street', 'address2': 'Govindan Road, West Mambalam', 'city': 'Chennai', 'state': 'Tamilnadu', 'pincode': '600033', 'contact_number': '8888888888' }, contents= [ ('T1-CNTS1-V1-XL',2), ('S1-NEW-V1',1) ] )
 
-	shipment2 = Shipment.create( recipient={ 'name': 'Isaac', 'email': 'isaac@stickystamp.com', 'address1': 'No 12, Krishnan Street', 'address2': 'Govindan Road, West Mambalam', 'city': 'Chennai', 'state': 'Tamilnadu', 'pincode': '600033', 'contact_number': '8888888888' }, contents= [ (Merchandise.get(1).sku(color='Red', size='M' ),1), ('M2V2',1) ] )
+
+The SKU strings used in the contents can be obtained from your dashboard. Alternatively, you can just obtain the list of SKUs dynamically as illustrated below
+
+First obtain the merchandise. There are 2 ways of doing this
+
+		merchs=Merchandise.all()
+		tshirt=merchs[1]
+		sticker=merchs[0]
+
+Or
+
+		tshirt=Merchandise.get("T1-CNTS1")
+		sticker=Merchandise.get("S1-CNOS1")
+
+In the second case, you need to provide the merchandise code, which can also be got from the dashboard. After obtaining the merchandise object, you can call create the contents list as follows
+
+	shipment2 = Shipment.create( recipient={ 'name': 'Isaac', 
+											'email': 'isaac@stickystamp.com', 
+											'address1': 'No 12, Krishnan Street', 
+											'address2': 'Govindan Road, West Mambalam', 
+											'city': 'Chennai', 'state': 'Tamilnadu', 
+											'pincode': '600033', 'contact_number': '8888888888' }, 
+								contents= [ (tshirt.sku(color='Red', size='M' ),1), 
+											(sticker.sku(translucent=False),1) 
+										] )
+
 
 
 
@@ -363,6 +390,42 @@ A `GrantForm` object
 
 #####Example usage:#####
 
-	grantform = GrantForm.create( choices= [ (['M1V1','M1V2','M1V3'],2), (['M2V2','M2V4'],1) ] )
+	grantform = GrantForm.create( choices= [ (['T1-CNTS1-V1-XL','T1-CNTS1-V1-L','T1-CNTS1-V1-M', 'T1-CNTS1-V1-S'],2), (['S1-NEW-V1','S1-NEW-V2-T'],1) ] )
+
+The SKU strings used to populate each individual tuple of the choices can be obtained from your dashboard. Alternatively, you can just obtain the list of SKUs dynamically as illustrated below
+
+First obtain the merchandise. There are 2 ways of doing this
+
+		merchs=Merchandise.all()
+		tshirt=merchs[1]
+		sticker=merchs[0]
+
+Or
+
+		tshirt=Merchandise.get("T1-CNTS1")
+		sticker=Merchandise.get("S1-CNOS1")
+
+In the second case, you need to provide the merchandise code, which can also be got from the dashboard. After obtaining the merchandise object, you can call create the choices list as follows
+
+		form=GrantForm.create( choices=[ (tshirt.skus(),2), (sticker.skus(),1) ], mailed_to="surya@stickystamp.com", days_till_expiry=30 )
+
+You can also filter the choices of the SKUs. For example, if you want the user to be able to choose only between red tshirts, you can do this
+
+		form=GrantForm.create( choices=[ (tshirt.skus( color="red"), 2 ), (sticker.skus(),1) ], mailed_to="surya@stickystamp.com", days_till_expiry=30 )
+
+You might also want to give the choice to user only for some merchandise and pre-determine the other merchandise ( Eg: Always send a 3x3 sticker, but let the user choose the color and size of tshirt ). In that case, the tuples given as a part of the choices list, should have just a single element list as a first item. 
+
+For eg, in the below example, while all skus of tshirts are being given as choices, the sticker is limited to just one SKU. 
+
+
+		form=GrantForm.create( choices=[ (tshirt.skus(), 2 ), ([ SKU.get('S1-NEW-V1') ],1) ], mailed_to="surya@stickystamp.com", days_till_expiry=30 )
+
+Even in the above example, it is not necessary for you to know the SKU of the particular item you want to choose. You can use it as below instead
+
+		form=GrantForm.create( choices=[ (tshirt.skus(), 2 ), ([ merchs[0].sku(translucent=False) ],1) ], mailed_to="surya@stickystamp.com", days_till_expiry=30 )
+
+
+You can obtain the url from the form by accessing `form.url`
+
 
 

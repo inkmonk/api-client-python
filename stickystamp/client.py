@@ -105,7 +105,7 @@ class Merchandise:
             self.dimension_unit=dimension_unit
 
     def __repr__(self):
-        return  "%s - %s"%(self.category.capitalize().replace('_',' '), self.name)
+        return  "%s - %s <%s>"%(self.category.capitalize().replace('_',' '), self.name, self.id)
 
     @staticmethod
     def _filter_params(merch):
@@ -307,8 +307,8 @@ class GrantForm:
 
     @staticmethod
     def _filter_params(grantform):
-        return filter_params(grantform, ('choices', 'days_till_expiry', 'mailed_to', 'id','token','url','is_valid', 
-                    'converted', 'expires_on', 'shipment', 'mailed_to') )
+        return filter_params(grantform, ('choices', 'mailed_to', 'id','token','url','is_valid', 
+                    'converted', 'expires_on', 'shipment') )
 
 
     @staticmethod
@@ -321,7 +321,7 @@ class GrantForm:
         return []
 
     @staticmethod
-    def create(choices=[], days_till_expiry=90):
+    def create(choices=[], days_till_expiry=90, mailed_to=None):
         sku_id_choices=[]
         for skus,qty in choices:
             sku_ids=[]
@@ -331,7 +331,11 @@ class GrantForm:
                 elif isinstance(sk,str):
                     sku_ids.append(sk)
             sku_id_choices.append( (sku_ids,qty) )
-        response = send_request('POST', '/v1/grantforms', {'choices': sku_id_choices, 'days_till_expiry': days_till_expiry })
+        if mailed_to:
+            response = send_request('POST', '/v1/grantforms', {'choices': sku_id_choices, 'days_till_expiry': days_till_expiry, 'mailed_to': mailed_to })
+        else:
+            response = send_request('POST', '/v1/grantforms', {'choices': sku_id_choices, 'days_till_expiry': days_till_expiry })
+
         if response.status_code==200:
             result=response.json()
             if result['status']=='success':
