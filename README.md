@@ -73,13 +73,15 @@ A list of `SKU` objects
 
 	SKU.get(id)
 
+The id of each SKU can be seen in the dashboard
+
 ##### Response #####
 
 A `SKU` object with the given id
 
 #####Example usage:#####
 	
-	print SKU.get(1).category
+	print SKU.get("S1-NEW-V1").category
 
 
 -----------------------------------------------------------------------------------------------------------
