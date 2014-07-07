@@ -3,32 +3,34 @@
 The Python client for interacting with the StickyStamp API hosted at api.stickystamp.com
 
 ## Installation ##
-Download the zip file. Inside the folder named stickystamp, there is a file called default_config.py. Change its name to config.py and set the values of `API_KEY` and `API_SECRET_ACCESS_KEY` with the keys you obtained from us. 
-Now run the setup.py with `python setup.py install`. 
+1. Download the zip file. 
+2. Open stickystamp/default_config.py. Change its name to config.py and set the values of `API_KEY` and `API_SECRET_ACCESS_KEY` to your keys. You can mail <orders@stickystamp.com> to obtain your set of keys.
+3. Now run the setup.py with `python setup.py install`. 
 
 -----------------------------------------------------------------------------
 
 ## Usage ##
-In your python code or the interpreter, just add this import line
+
+Import the following classes
 
 `from stickystamp import Merchandise, SKU, Recipient, Shipment, GrantForm`
 
-Use the factory methods documented below for interacting with the objects. Each method call is actually a request to Stickystamp API. Do not instantiate the objects yourself. The objects will have the relevant data only if instantiated using the factory methods. 
+Use the static methods documented below for interacting with the objects. Each method call is actually a request to Stickystamp API. Do not instantiate the objects yourself. The objects will have the relevant data only if instantiated using the static methods. 
 
 -----------------------------------------------------------------------------------------------------------
 
 
 ## SKU ##
 
-A SKU is a stock keeping unit. Each instance of SKU (denoted henceforth as sku in lowercase ) has a unique set of parameters. You Merchandise might have multiple skus.
-For exampe, "Contest1 Tshirt" might be a merchandise you had created. It could have several SKUS in it based on color and size like 
-'Red L', 'Red XL' , 'Blue M', 'Blue XL'. Each SKU is identified by a unique id
+A SKU is a stock keeping unit. Each instance of SKU (denoted henceforth as sku in lowercase ) has a unique set of parameters. A merchandise might have multiple skus.
+For exampe, "Contest1 Tshirt" might be a merchandise you had created. It could have several skus based on color and size like 
+'Red L', 'Red XL' , 'Blue M', 'Blue XL'. Each sku is identified by a unique id. 
 
 ### Attributes ###
 
-`id` - The id of the sku object
+`id` - The id of the sku. 
 
-`category` - The category of the sku. It can be 'tshirt_merchandise' or 'sticker_merchandise' or 'sticker_sheet_merchandise' or 'postcard_merchandise' or just 'sku' ( in case the sku doesn't belong to any merchandise)
+`category` - The category of the sku. It can be 'tshirt_merchandise' or 'sticker_merchandise' or 'sticker_sheet_merchandise' or 'postcard_merchandise' or just 'non_merchandise_sku' ( in case the sku doesn't belong to any merchandise)
 
 `name` - A name for the SKU. This is usually set only if the sku doesn't belong to any merchandise
 
@@ -40,7 +42,7 @@ The following attributes are set only if the merchandise category is `tshirt_mer
 
 `color` - Tshirt color
 
-`size` - Tshirt size ( 'S', 'M' etc)
+`size` - Tshirt size ( 'Small', 'Medium' etc)
 
 `tshirt_type` - Tshirt type ( 'Cotton Roundneck', 'Polycotton Roundneck' etc)
 
@@ -73,7 +75,7 @@ A list of `SKU` objects
 
 	SKU.get(id)
 
-The id of each SKU can be seen in the dashboard
+The id of each SKU is listed in your dashboard at beta.stickystamp.com/dashboard
 
 ##### Response #####
 
@@ -88,7 +90,7 @@ A `SKU` object with the given id
 
 ## Merchandise ##
 
-The designs you upload become a merchandise. A merchandise might have many skus in it with varying properties. Eg, 'FIFA 2014 Tshirt' is a merchandise. 'FIFA 2014 Tshirt - Red XL', 'FIFA 2014 Tshirt - Blue M' are skus belonging to that merchandise. 
+Merchandise is the product created from a given design(s). A merchandise might have many skus in it with varying properties. Eg, 'FIFA 2014 Tshirt' is a merchandise. 'FIFA 2014 Tshirt - Red XL', 'FIFA 2014 Tshirt - Blue M' are skus belonging to that merchandise. 
 
 ### Attributes ###
 
@@ -130,7 +132,7 @@ A list of `Merchandise` objects
 
 	Merchandise.get(id)
 
-This id can be obtained from the site for each merchandise. Or calling `Merchandise.all()` will list all the merchandise names with this id for each merchandise within angular braces.
+This id can be obtained from the dashboard at beta.stickystamp.com/dashboard . Or calling `Merchandise.all()` will list all the merchandise names as well as their ids
 
 ##### Response #####
 
@@ -180,7 +182,7 @@ A `SKU` object
 
 ## Recipient ##
 
-A recipient is a recipient address to which you send your shipments to.
+A recipient is a recipient address to which the shipments are mailed.
 
 ### Attributes ###
 
@@ -205,13 +207,40 @@ A recipient is a recipient address to which you send your shipments to.
 `contact_number` - Contact number of the recipient
 
 
+####Getting all recipients####
+
+	Recipient.all()
+
+##### Response #####
+
+A list of `Recipient` objects
+
+#####Example usage:#####
+	
+	recipients=Recipient.all()
+	for recipient in recipients:
+		print recipient.name, recipient.contact_number
+
+
+####Getting a specific recipient####
+
+	Recipient.get(id)
+
+
+##### Response #####
+
+A `Recipient` object with the given id
+
+#####Example usage:#####
+	
+	print Recipient.get(2).contact_number
 
 --------------------------------------------------------------------------------------------------------------------------------
 
 
 ## Shipment ##
 
-A shipment is the package that you ship to a recipient. It has a recipient ( Name, email and address ) and some contents ( A set of skus )
+A shipment is the package that is shipped to a recipient. It has a recipient ( Name, email and address ) and some contents ( A set of skus )
 
 ### Attributes ###
 
@@ -231,7 +260,7 @@ A shipment is the package that you ship to a recipient. It has a recipient ( Nam
 
 `gross_amount` - Total bill for the shipment
 
-`contents` - A list of tuples. Each tuple has two elements. First element is a sku object. The second element is the quantity of that sku present in the shipment.
+`contents` - A list of tuples. Each tuple has two elements. First element is a sku. The second element is the quantity of that sku present in the shipment.
 
 
 ####Getting all shipments####
@@ -266,7 +295,10 @@ A `Shipment` object with the given id
 
 	Shipment.create(recipient, contents)
 
-The arg `recipient` expects a dictionary with keys as the attributes of `Recipient` ie `name`, `email`, `address1` etc
+The arg `recipient` can be in one of these forms 
+	(1) a dictionary with keys as the attributes of `Recipient` ie `name`, `email`, `address1` etc
+	(2) A `Recipient` object
+	(3) An integer representing the id of a recipient object
 
 The arg `contents` expects a list of tuples. The first element of tuple can either be a sku object or the id of a sku object. The second element is the quantity of that sku to be added to the shipment
 

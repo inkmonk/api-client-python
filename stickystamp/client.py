@@ -263,11 +263,19 @@ class Shipment:
 
     @staticmethod
     def create(recipient, contents):
-        response = send_request('POST','/v1/shipments', {'contents': contents, 'recipient': recipient })
+        sku_id_contents=[]
+        for sk,qty in contents:
+            if isinstance(sk, SKU):
+                sku_id_contents.append( (sk.id,qty)  )
+            elif isinstance(sk,str):
+                sku_id_contents.append( ( sk, qty ) )
+        if isinstance(recipient, Recipient):
+            recipient=recipient.id
+        response = send_request('POST','/v1/shipments', {'contents': sku_id_contents, 'recipient': recipient })
         if response.status_code==200:
             result=response.json()
             if result['status']=='success':
-                return Shipment(**Shipment._filter_params(result['shipment'])),{}
+                return Shipment(**Shipment._filter_params(result['shipment']))
             else:
                 raise Exception(result['error'])
         return None
@@ -288,7 +296,10 @@ class Shipment:
             result=response.json()
             if result['status']=='success':
                 return Shipment(**Shipment._filter_params(result['shipment']) ) 
-        return None        
+        return None  
+
+    def __repr__(self):
+        return "%s To %s"%(self.contents, self.recipient)      
 
 class GrantForm:
 
