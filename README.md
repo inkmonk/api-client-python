@@ -4,7 +4,7 @@ The Python client for interacting with the StickyStamp API hosted at api.stickys
 
 ## Installation ##
 1. Download the zip file. 
-2. Open stickystamp/default_config.py. Change its name to config.py and set the values of `API_KEY` and `API_SECRET_ACCESS_KEY` to your keys. You can mail <orders@stickystamp.com> to obtain your set of keys.
+2. Inside stickystamp there is a file called **default_config.py**. Rename it to **config.py** and set the values of `API_KEY` and `API_SECRET_ACCESS_KEY` to your keys. You can mail <orders@stickystamp.com> to obtain your set of keys.
 3. Now run the setup.py with `python setup.py install`. 
 
 -----------------------------------------------------------------------------
@@ -331,7 +331,7 @@ Or
 		tshirt=Merchandise.get("T1-CNTS1")
 		sticker=Merchandise.get("S1-CNOS1")
 
-In the second case, you need to provide the merchandise code, which can also be got from the dashboard. After obtaining the merchandise object, you can call create the contents list as follows
+In the second case, you need to provide the merchandise id, which can also be got from the dashboard. After obtaining the merchandise object, you can call create the contents list as follows
 
 	shipment2 = Shipment.create( recipient={ 'name': 'Isaac', 
 											'email': 'isaac@stickystamp.com', 
