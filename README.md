@@ -487,4 +487,15 @@ Even in the above example, it is not necessary for you to know the SKU of the pa
 You can obtain the url from the form by accessing `form.url`
 
 
+####Revoking a grantform####
 
+	GrantForm.revoke(id)
+
+##### Response #####
+
+True if successful, False otherwise
+
+#####Example usage:#####
+
+	if GrantForm.revoke(2):
+		print "revoked"

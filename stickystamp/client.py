@@ -321,6 +321,8 @@ class GrantForm:
         return filter_params(grantform, ('choices', 'mailed_to', 'id','token','url','is_valid', 
                     'converted', 'expires_on', 'shipment') )
 
+    def __repr__(self):
+        return self.url
 
     @staticmethod
     def all():
@@ -360,10 +362,20 @@ class GrantForm:
         response = send_request('GET', '/v1/grantforms/%s'%id)
         if response.status_code==200:
             result=response.json()
-            print result
             if result['status']=='success':
                 return GrantForm(**GrantForm._filter_params(result['grantform']) ) 
         return None  
+
+    @staticmethod
+    def revoke(id):
+        response = send_request('DELETE', '/v1/grantforms/%s'%id)
+        if response.status_code==200:
+            result=response.json()
+            if result['status']=='success':
+                return True
+            else:
+                return False
+        return False 
 
 
 if __name__ == '__main__':
