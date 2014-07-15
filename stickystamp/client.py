@@ -174,7 +174,7 @@ class SKU:
 
     @staticmethod
     def _filter_params(sku):
-        return filter_params(sku, ('id','category','available_stock','merchandise_name','merchandise_id',
+        return filter_params(sku, ('id','category','available_stock','merchandise_name','merchandise_id', 
                             'color','size', 'tshirt_type','translucent', 'name', 'dimension', 'dimension_unit'))
 
    
@@ -303,7 +303,7 @@ class Shipment:
 
 class GrantForm:
 
-    def __init__(self, id=None, token=None, url=None, is_valid=None, converted=None, expires_on=None, shipment=None, mailed_to=None, choices=None):
+    def __init__(self, id=None, token=None, url=None, expired=None, revoked=None, is_valid=None, converted=None, expires_on=None, shipment=None, mailed_to=None, choices=None):
         self.id=id
         self.token=token
         self.url=url
@@ -311,6 +311,8 @@ class GrantForm:
         self.converted=converted
         self.expires_on=expires_on
         self.mailed_to=mailed_to
+        self.revoked = revoked
+        self.expired=expired
         if choices:
             self.choices=choices
         if shipment:
@@ -318,7 +320,7 @@ class GrantForm:
 
     @staticmethod
     def _filter_params(grantform):
-        return filter_params(grantform, ('choices', 'mailed_to', 'id','token','url','is_valid', 
+        return filter_params(grantform, ('choices', 'mailed_to', 'id','token','url','is_valid', 'revoked', 'expired',
                     'converted', 'expires_on', 'shipment') )
 
     def __repr__(self):
