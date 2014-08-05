@@ -336,7 +336,7 @@ class GrantForm:
         return []
 
     @staticmethod
-    def create(choices=[], days_till_expiry=90, mailed_to=None):
+    def create(choices=[], days_till_expiry=90, mailed_to=None, form_title=None):
         sku_id_choices=[]
         for skus,qty in choices:
             sku_ids=[]
@@ -347,7 +347,10 @@ class GrantForm:
                     sku_ids.append(sk)
             sku_id_choices.append( (sku_ids,qty) )
         if mailed_to:
-            response = send_request('POST', '/v1/grantforms', {'choices': sku_id_choices, 'days_till_expiry': days_till_expiry, 'mailed_to': mailed_to })
+            if form_title:
+                response = send_request('POST', '/v1/grantforms', {'choices': sku_id_choices, 'days_till_expiry': days_till_expiry, 'mailed_to': mailed_to, 'form_title': form_title })
+            else:
+                response = send_request('POST', '/v1/grantforms', {'choices': sku_id_choices, 'days_till_expiry': days_till_expiry, 'mailed_to': mailed_to })
         else:
             response = send_request('POST', '/v1/grantforms', {'choices': sku_id_choices, 'days_till_expiry': days_till_expiry })
 
