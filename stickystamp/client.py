@@ -352,7 +352,10 @@ class GrantForm:
             else:
                 response = send_request('POST', '/v1/grantforms', {'choices': sku_id_choices, 'days_till_expiry': days_till_expiry, 'mailed_to': mailed_to })
         else:
-            response = send_request('POST', '/v1/grantforms', {'choices': sku_id_choices, 'days_till_expiry': days_till_expiry })
+            if form_title:
+                response = send_request('POST', '/v1/grantforms', {'choices': sku_id_choices, 'days_till_expiry': days_till_expiry, 'form_title': form_title })
+            else:
+                response = send_request('POST', '/v1/grantforms', {'choices': sku_id_choices, 'days_till_expiry': days_till_expiry })
 
         if response.status_code==200:
             result=response.json()
@@ -360,6 +363,7 @@ class GrantForm:
                 return GrantForm(**GrantForm._filter_params(result['grantform']))
             else:
                 raise Exception(result['error'])
+        print response.status_code
         return None
 
     @staticmethod

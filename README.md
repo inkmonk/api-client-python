@@ -369,6 +369,8 @@ A grantform is an url for a one time form that you provide to your customers/rec
 
 `mailed_to` - Set this field to remember the email address to which you mailed this form url to
 
+`form_title` - Set this field to set the title of the form
+
 `choices` - A list of tuples. Each tuple has 2 elements. The first element is a list of skus which you want to give as choices for that field. The second element denotes the quantity of skus that you want to let the user choose in that field.
 
 `shipment` - A shipment object. This gets set when the recipient fills up the details and submits the form. This shipment object contains all the details submitted by the recipient
