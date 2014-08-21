@@ -151,7 +151,7 @@ class Merchandise:
 class SKU:
 
     def __init__(self, id, category, available_stock, merchandise_name=None, merchandise_id=None,  color=None, size=None,
-                    tshirt_type=None, translucent=None, name=None, dimension=None, dimension_unit=None  ):
+                    tshirt_type=None, translucent=None, name=None, dimension=None, dimension_unit=None, material=None  ):
         self.id=id
         self.category=category
         self.available_stock=available_stock
@@ -164,9 +164,10 @@ class SKU:
             self.tshirt_type=tshirt_type
         if self.category=='sticker_merchandise' or self.category=='sticker_sheet_merchandise':
             self.translucent=(int(translucent)!=0)
-        if self.category=='sticker_merchandise' or self.category=='sticker_sheet_merchandise' or self.category=='postcard_merchandise':
+        if self.category=='sticker_merchandise' or self.category=='sticker_sheet_merchandise' or self.category=='postcard_merchandise' or self.category=='poster_merchandise':
             self.dimension=dimension
             self.dimension_unit=dimension_unit
+            self.material=material
         if self.category=='sku':
             self.name=name
 
@@ -174,7 +175,7 @@ class SKU:
     @staticmethod
     def _filter_params(sku):
         return filter_params(sku, ('id','category','available_stock','merchandise_name','merchandise_id', 
-                            'color','size', 'tshirt_type','translucent', 'name', 'dimension', 'dimension_unit'))
+                            'color','size', 'tshirt_type','translucent', 'name', 'dimension', 'dimension_unit', 'material'))
 
    
 
