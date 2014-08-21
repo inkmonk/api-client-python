@@ -1,5 +1,6 @@
 import json, requests, hmac, decimal, config
 from hashlib import sha1
+from base64 import b64encode
 
 def dthandler(obj):
     if isinstance(obj, datetime):
@@ -67,9 +68,7 @@ def send_request(method, path, payload=None):
     message = path + method + "application/json"
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': "%s:%s" % (config.API_KEY,
-                                    get_signature(str(config.API_SECRET_ACCESS_KEY),
-                                                  message=message))
+        'Authorization': "Basic %s" % b64encode(config.API_KEY+":")
     }
     if method=="POST":
       res = requests.post(url, data=json.dumps(payload), headers=headers)
@@ -220,6 +219,30 @@ class Recipient:
         return filter_params(shipment, ('id','name','email','address1','address2','city','state', 'country', 'pincode', 'contact_number'))
 
     @staticmethod
+    def create(name=None, email=None, contact_number=None, address1=None, address2=None,  state=None , city=None,  country=None, pincode=None):
+        response = send_request('POST','/v1/recipients', {'name': name, 'email': email, 'contact_number': contact_number, 'address1': address1, 'address2': address2,
+                                                     'city': city, 'state': state, 'country': country, 'pincode': pincode })
+        if response.status_code==200:
+            result=response.json()
+            if result['status']=='success':
+                return Recipient(**Recipient._filter_params(result['recipient']))
+            else:
+                raise Exception(result['error'])
+
+        return None
+
+    @staticmethod
+    def update(id, **kwargs):
+        response = send_request('PUT', '/v1/recipients/%s'%id, kwargs)
+        if response.status_code==200:
+            result=response.json()
+            if result['status']=='success':
+                return Recipient(**Recipient._filter_params(result['recipient']))
+            else:
+                raise Exception(result['error'])
+
+
+    @staticmethod
     def all():
         response = send_request('GET', '/v1/recipients')
         if response.status_code==200:
@@ -236,6 +259,14 @@ class Recipient:
             if result['status']=='success':
                 return Recipient(**Recipient._filter_params(result['recipient']) ) 
         return None 
+
+    @staticmethod
+    def delete(id):
+        response = send_request('DELETE', '/v1/recipients/%s'%id)
+        if response.status_code==200:
+            result=response.json()
+            return result['status']=='success'
+        return False
 
     def __repr__(self):
         return "%s <%s>"%(self.name, self.email) 
