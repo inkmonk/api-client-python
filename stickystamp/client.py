@@ -99,7 +99,7 @@ class Merchandise:
             self.private_label= (int(private_label)!=0 )
             self.tshirt_type = tshirt_type
             self.color = color
-        elif self.category =='sticker' or self.category == 'sticker_sheet':
+        elif self.category =='sticker' or self.category == 'sticker_sheet' or self.category == 'postcard' or self.category == 'poster':
             self.dimension=dimension
             self.dimension_unit=dimension_unit
 
