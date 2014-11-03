@@ -91,7 +91,8 @@ def ping():
 
 class Merchandise:
 
-    def __init__(self, category, id, name=None, private_label=None, tshirt_type=None, color=None, dimension=None, dimension_unit=None ):
+    def __init__(self, category, id, name=None, private_label=None, tshirt_type=None, color=None,
+                 dimension=None, dimension_unit=None, translucent=None):
         self.category=category
         self.id=id
         self.name=name
@@ -99,7 +100,9 @@ class Merchandise:
             self.private_label= (int(private_label)!=0 )
             self.tshirt_type = tshirt_type
             self.color = color
-        elif self.category =='sticker' or self.category == 'sticker_sheet' or self.category == 'postcard' or self.category == 'poster':
+        if self.category == 'sticker' or self.category == 'sticker_sheet':
+            self.translucent = translucent
+        if self.category != 'tshirt':
             self.dimension=dimension
             self.dimension_unit=dimension_unit
 
