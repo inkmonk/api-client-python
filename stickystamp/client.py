@@ -20,6 +20,15 @@ def sanitize(params, whitelist, additions):
     return params
 
 def filter_params(params, whitelist):
+    """
+    params: Input dictionary
+    whitelist: List of whitelist elements.
+    Returns params with only whitelist keys.
+    >>> filter_params({'a':'a', 'b':'b', 'c':'c'}, ['a','b'])
+    {'a': 'a', 'b': 'b'}
+    >>> filter_params({'a':'a', 'b':'b', 'c':'c'}, ['a'])
+    {'a': 'a'}
+    """
     return dict([(k,v) for k,v in params.iteritems() if k in whitelist ])
 
 class Serializable(object):
@@ -53,7 +62,6 @@ class Serializable(object):
 
 def get_signature(secret_key, request=None, message=None):
     """Generate signature
-
     Method to sign a http request using HMAC
     """
     if request:
@@ -111,7 +119,8 @@ class Merchandise:
 
     @staticmethod
     def _filter_params(merch):
-        return filter_params(merch, ('id','category','name','private_label','tshirt_type','dimension','dimension_unit', 'color'))
+        return filter_params(merch, ('id','category','name','private_label','tshirt_type','dimension','dimension_unit', 'color',
+                                     'translucent'))
 
     @staticmethod
     def all():
@@ -121,8 +130,6 @@ class Merchandise:
             return [ Merchandise(**Merchandise._filter_params(merch) ) for merch in res['merchandise'] ]
         else:
             return []
-
-      
 
     def skus(self, **params):
         response = send_request('GET', '/v1/merchandise/%s/skus'%self.id, params)
