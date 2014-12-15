@@ -1,4 +1,4 @@
-import json, requests, hmac, decimal, config
+import json, requests, hmac, decimal,  default_config
 from hashlib import sha1
 from base64 import b64encode
 
