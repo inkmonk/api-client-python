@@ -178,7 +178,7 @@ class SKU:
             self.dimension=dimension
             self.dimension_unit=dimension_unit
             self.material=material
-        if self.category=='sku':
+        if self.category=='sku' or self.category=='non_merchandise_sku':
             self.name=name
 
 
@@ -284,7 +284,8 @@ class Recipient:
 
 class Shipment:
 
-    def __init__(self, id,  recipient, contents=[], status=None, shipping_charges=0, tax=0,tracking_url=None,net_amount=0,gross_amount=0 ):
+    def __init__(self, id,  recipient, contents=[], status=None, shipping_charges=0, tax=0,tracking_url=None,net_amount=0,
+                 gross_amount=0, dispatched_at=None ):
         self.id=id
         self.recipient=Recipient(**Recipient._filter_params(recipient) )
         self.status=status
@@ -294,6 +295,7 @@ class Shipment:
         self.gross_amount=gross_amount
         self.tracking_url=tracking_url
         self.contents=[]
+        self.dispatched_at = dispatched_at
         for item_params in contents:
             self.contents.append( ( SKU(**SKU._filter_params(item_params['stockable']) ), 
                                     item_params['quantity']
@@ -301,7 +303,8 @@ class Shipment:
 
     @staticmethod
     def _filter_params(shipment):
-        return filter_params(shipment, ('id','recipient','status','net_amount','tax','gross_amount','tracking_url', 'contents') )
+        return filter_params(shipment, ('id','recipient','status','net_amount','tax','gross_amount','tracking_url', 'contents',
+                                        'dispatched_at') )
 
     @staticmethod
     def create(recipient, contents):
