@@ -1,5 +1,5 @@
 API_URL = "http://localhost.com:5000/api"
 API_VERSION = 'v1'
-API_KEY = '4f52176c7b894a9ab5a15777feeba02124022015190803287306'
-API_SECRET = 'a63421f75f9b4bb58fb3ae63fffbfd9024022015190803287405'
+API_KEY = None
+API_SECRET = None
 SITE_URL = "http://localhost.com:5000"

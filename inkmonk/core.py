@@ -29,6 +29,10 @@ def result(response):
 def get(resource, identifier, params={}, version=config.API_VERSION,
         url=config.API_URL, key=config.API_KEY,
         secret=config.API_SECRET):
+    if key is None:
+        key = config.API_KEY
+    if secret is None:
+        secret = config.API_SECRET
     return result(requests.get(
         '%s/%s/%s/%s' % (url, version, resource, identifier),
         headers={'Content-Type': JSON_MIME_TYPE,
@@ -43,6 +47,10 @@ def get(resource, identifier, params={}, version=config.API_VERSION,
 def all(resource, params={}, version=config.API_VERSION,
         url=config.API_URL, key=config.API_KEY,
         secret=config.API_SECRET):
+    if key is None:
+        key = config.API_KEY
+    if secret is None:
+        secret = config.API_SECRET
     return result(requests.get(
         '{0}/{1}/{2}'.format(url, version, resource),
         headers={'Content-Type': JSON_MIME_TYPE,
@@ -57,6 +65,10 @@ def all(resource, params={}, version=config.API_VERSION,
 def post(resource, data=None, version=config.API_VERSION,
          url=config.API_URL, key=config.API_KEY,
          secret=config.API_SECRET):
+    if key is None:
+        key = config.API_KEY
+    if secret is None:
+        secret = config.API_SECRET
     return result(requests.post(
         '{0}/{1}/{2}'.format(url, version, resource),
         data=json.dumps(data),
@@ -73,6 +85,10 @@ def put(resource, identifier, data=None,
         version=config.API_VERSION,
         url=config.API_URL, key=config.API_KEY,
         secret=config.API_SECRET):
+    if key is None:
+        key = config.API_KEY
+    if secret is None:
+        secret = config.API_SECRET
     return result(requests.put(
         '{0}/{1}/{2}/{3}'.format(url, version, resource, identifier),
         data=json.dumps(data),
@@ -89,6 +105,10 @@ def patch(resource, identifier, data=None,
           version=config.API_VERSION,
           url=config.API_URL, key=config.API_KEY,
           secret=config.API_SECRET):
+    if key is None:
+        key = config.API_KEY
+    if secret is None:
+        secret = config.API_SECRET
     return result(requests.patch(
         '{0}/{1}/{2}/{3}'.format(url, version, resource, identifier),
         data=json.dumps(data),
