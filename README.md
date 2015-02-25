@@ -3,14 +3,18 @@
 The Python client for interacting with the Inkmonk API hosted at https://inkmonk.in/api/v1
 
 ## Installation ##
+
 1. Download the zip file. 
 2. Run  `python setup.py install`. 
 3. import inkmonk
 4. Set api key and secret key as follows, 
->>> inkmonk.config.API_KEY='4f52176c7b894a9ab5a15777feeba02124022015190803287306'
->>> inkmonk.config.API_SECRET='a63421f75f9b4bb58fb3ae63fffbfd9024022015190803287405'
+
+	>>> inkmonk.config.API_KEY='4f52176c7b894a9ab5a15777feeba02124022015190803287306'
+	>>> inkmonk.config.API_SECRET='a63421f75f9b4bb58fb3ae63fffbfd9024022015190803287405'
+
 5. Start using
->>> inkmonk.Merchandise.all()
+
+	>>> inkmonk.Merchandise.all()
 
 Alternatively you can also set the API KEY and API_SECRET in the config.py file itself after step 1 and do only step 2. You can then start using it without having to set programmatically.
 
@@ -40,18 +44,19 @@ For all these classes you have the following methods available
 		form_title="Awesome Title")
 
 2. all
-	tshirts = inkmonk.Tshirt.all()
 
-	for t in tshirts:
-		print t.name
+		tshirts = inkmonk.Tshirt.all()
+
+		for t in tshirts:
+			print t.name
 
 3. get
 	
-	tee = inkmonk.Tshirt.get('U1-C81C-TS-RNE-CO')
+		tee = inkmonk.Tshirt.get('U1-C81C-TS-RNE-CO')
 
 4. update
 	
-	tee_updated = inkmonk.Tshirt.update('U1-C81C-TS-RNE-CO', color="Navy Blue")
+		tee_updated = inkmonk.Tshirt.update('U1-C81C-TS-RNE-CO', color="Navy Blue")
 
 5. patch
 
@@ -66,4 +71,5 @@ The following core methods are present
 5. patch
 
 Eg: 
-inkmonk.core.all('skus', {'categorized': 'old'})
+
+	inkmonk.core.all('skus', {'categorized': 'old'})
