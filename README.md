@@ -35,14 +35,14 @@ For all these classes you have the following methods available
 
 1. create
 
-	c=Campaign.create(
-		slots=[{'quantity': 1,
-				'choices': [sk.id for sk in sks]}],
-		campaign_title="This is a new campaign",
-		customers=['surya@stickystamp.com'],
-		template_body="Hello",
-		template_header="Heading",
-		form_title="Awesome Title")
+		c=Campaign.create(
+			slots=[{'quantity': 1,
+					'choices': [sk.id for sk in sks]}],
+			campaign_title="This is a new campaign",
+			customers=['surya@stickystamp.com'],
+			template_body="Hello",
+			template_header="Heading",
+			form_title="Awesome Title")
 
 2. all
 
