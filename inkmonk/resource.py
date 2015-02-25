@@ -14,19 +14,23 @@ class Resource(object):
         return str(self.id)
 
     @classmethod
-    def get(cls, identifier, params=[], version=config.API_VERSION,
-            url=config.API_URL, key=config.API_KEY,
-            secret=config.API_SECRET):
-        return Resource(**core.get(cls._resource_, identifier, params=params,
-                        version=version, url=url, key=key,
-                        secret=secret))
+    def get(cls, identifier, **kwargs):
+        version = kwargs.pop("version", config.API_VERSION)
+        url = kwargs.pop("url", config.API_URL)
+        key = kwargs.pop("key", config.API_KEY)
+        secret = kwargs.pop("secret", config.API_SECRET)
+        return cls(**core.get(cls._resource_, identifier, params=kwargs,
+                   version=version, url=url, key=key,
+                   secret=secret))
 
     @classmethod
-    def all(cls, params=[], version=config.API_VERSION,
-            url=config.API_URL, key=config.API_KEY,
-            secret=config.API_SECRET):
-        return [Resource(**kwargs) for kwargs in core.all(
-            cls._resource_, params=params,
+    def all(cls, **kwargs):
+        version = kwargs.pop("version", config.API_VERSION)
+        url = kwargs.pop("url", config.API_URL)
+        key = kwargs.pop("key", config.API_KEY)
+        secret = kwargs.pop("secret", config.API_SECRET)
+        return [cls(**r_kwargs) for r_kwargs in core.all(
+            cls._resource_, params=kwargs,
             version=version, url=url, key=key, secret=secret)]
 
     @classmethod
@@ -35,10 +39,41 @@ class Resource(object):
         url = kwargs.pop("url", config.API_URL)
         key = kwargs.pop("key", config.API_KEY)
         secret = kwargs.pop("secret", config.API_SECRET)
-        result = core.create(
+        result = core.post(
             cls._resource_, data=kwargs, version=version, url=url,
             key=key, secret=secret)
-        if isinstance(result, dict):
-            return Resource(**result)
-        elif isinstance(result, list):
-            return [Resource(**params) for params in result]
+        return cls(**result)
+
+    @classmethod
+    def create_all(cls, **kwargs):
+        version = kwargs.pop("version", config.API_VERSION)
+        url = kwargs.pop("url", config.API_URL)
+        key = kwargs.pop("key", config.API_KEY)
+        secret = kwargs.pop("secret", config.API_SECRET)
+        result = core.post(
+            cls._resource_, data=kwargs, version=version, url=url,
+            key=key, secret=secret)
+        return [cls(**params) for params in result]
+
+    @classmethod
+    def update(cls, identifier, **kwargs):
+        version = kwargs.pop("version", config.API_VERSION)
+        url = kwargs.pop("url", config.API_URL)
+        key = kwargs.pop("key", config.API_KEY)
+        secret = kwargs.pop("secret", config.API_SECRET)
+        result = core.put(
+            cls._resource_, identifier, data=kwargs, version=version,
+            url=url, key=key, secret=secret)
+        return cls(**result)
+
+    @classmethod
+    def patch(cls, identifier, **kwargs):
+        version = kwargs.pop("version", config.API_VERSION)
+        url = kwargs.pop("url", config.API_URL)
+        key = kwargs.pop("key", config.API_KEY)
+        secret = kwargs.pop("secret", config.API_SECRET)
+        result = core.put(
+            cls._resource_, identifier, data=kwargs,
+            version=version, url=url,
+            key=key, secret=secret)
+        return cls(**result)
