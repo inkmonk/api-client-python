@@ -9,12 +9,12 @@ The Python client for interacting with the Inkmonk API hosted at https://inkmonk
 3. import inkmonk
 4. Set api key and secret key as follows, 
 
-	>>> inkmonk.config.API_KEY='4f52176c7b894a9ab5a15777feeba02124022015190803287306'
-	>>> inkmonk.config.API_SECRET='a63421f75f9b4bb58fb3ae63fffbfd9024022015190803287405'
+		inkmonk.config.API_KEY='4f52176c7b894a9ab5a15777feeba02124022015190803287306'
+		inkmonk.config.API_SECRET='a63421f75f9b4bb58fb3ae63fffbfd9024022015190803287405'
 
 5. Start using
 
-	>>> inkmonk.Merchandise.all()
+		inkmonk.Merchandise.all()
 
 Alternatively you can also set the API KEY and API_SECRET in the config.py file itself after step 1 and do only step 2. You can then start using it without having to set programmatically.
 
