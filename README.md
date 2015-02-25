@@ -32,6 +32,7 @@ The following classes are available
 6. Shipment
 
 For all these classes you have the following methods available
+
 1. create
 
 	c=Campaign.create(
