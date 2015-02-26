@@ -72,5 +72,12 @@ The following core methods are present
 5. patch
 
 Eg: 
+	inkmonk.core.all('tshirts')
 
-	inkmonk.core.all('skus', {'categorized': 'old'})
+	You can pass the query params like this
+
+	inkmonk.core.all('skus', params = {'categorized': 'old'})
+
+If you really really dont want any of the fancy classes and want just the raw response, you can still do it by passing raw=True to the core methods.
+
+	response = inkmonk.core.all('skus', raw=True)
