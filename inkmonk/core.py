@@ -28,12 +28,12 @@ def result(response):
 
 def get(resource, identifier, params={}, version=config.API_VERSION,
         url=config.API_URL, key=config.API_KEY,
-        secret=config.API_SECRET):
+        secret=config.API_SECRET, raw=False):
     if key is None:
         key = config.API_KEY
     if secret is None:
         secret = config.API_SECRET
-    return result(requests.get(
+    response = requests.get(
         '%s/%s/%s/%s' % (url, version, resource, identifier),
         headers={'Content-Type': JSON_MIME_TYPE,
                  'Authorization': get_signed_authorization_header(
@@ -41,17 +41,21 @@ def get(resource, identifier, params={}, version=config.API_VERSION,
                      "GET:{0}/{1}/{2}:{3}".format(
                          version, resource, identifier, JSON_MIME_TYPE)
                      )},
-        params=params))
+        params=params)
+    if raw:
+        return response
+    else:
+        return result(response)
 
 
 def all(resource, params={}, version=config.API_VERSION,
         url=config.API_URL, key=config.API_KEY,
-        secret=config.API_SECRET):
+        secret=config.API_SECRET, raw=False):
     if key is None:
         key = config.API_KEY
     if secret is None:
         secret = config.API_SECRET
-    return result(requests.get(
+    response = requests.get(
         '{0}/{1}/{2}'.format(url, version, resource),
         headers={'Content-Type': JSON_MIME_TYPE,
                  'Authorization': get_signed_authorization_header(
@@ -59,17 +63,21 @@ def all(resource, params={}, version=config.API_VERSION,
                      "GET:{0}/{1}:{2}".format(
                          version, resource, JSON_MIME_TYPE)
                      )},
-        params=params))
+        params=params)
+    if raw:
+        return response
+    else:
+        return result(response)
 
 
 def post(resource, data=None, version=config.API_VERSION,
          url=config.API_URL, key=config.API_KEY,
-         secret=config.API_SECRET):
+         secret=config.API_SECRET, raw=False):
     if key is None:
         key = config.API_KEY
     if secret is None:
         secret = config.API_SECRET
-    return result(requests.post(
+    response = requests.post(
         '{0}/{1}/{2}'.format(url, version, resource),
         data=json.dumps(data),
         headers={'Content-Type': JSON_MIME_TYPE,
@@ -78,18 +86,22 @@ def post(resource, data=None, version=config.API_VERSION,
                      "POST:{0}/{1}:{2}".format(
                          version, resource, JSON_MIME_TYPE)
                      )}
-        ))
+        )
+    if raw:
+        return response
+    else:
+        return result(response)
 
 
 def put(resource, identifier, data=None,
         version=config.API_VERSION,
         url=config.API_URL, key=config.API_KEY,
-        secret=config.API_SECRET):
+        secret=config.API_SECRET, raw=False):
     if key is None:
         key = config.API_KEY
     if secret is None:
         secret = config.API_SECRET
-    return result(requests.put(
+    response = requests.put(
         '{0}/{1}/{2}/{3}'.format(url, version, resource, identifier),
         data=json.dumps(data),
         headers={'Content-Type': JSON_MIME_TYPE,
@@ -98,18 +110,22 @@ def put(resource, identifier, data=None,
                      "PUT:{0}/{1}/{2}:{3}".format(
                          version, resource, identifier, JSON_MIME_TYPE)
                      )}
-        ))
+        )
+    if raw:
+        return response
+    else:
+        return result(response)
 
 
 def patch(resource, identifier, data=None,
           version=config.API_VERSION,
           url=config.API_URL, key=config.API_KEY,
-          secret=config.API_SECRET):
+          secret=config.API_SECRET, raw=False):
     if key is None:
         key = config.API_KEY
     if secret is None:
         secret = config.API_SECRET
-    return result(requests.patch(
+    response = requests.patch(
         '{0}/{1}/{2}/{3}'.format(url, version, resource, identifier),
         data=json.dumps(data),
         headers={'Content-Type': JSON_MIME_TYPE,
@@ -118,4 +134,8 @@ def patch(resource, identifier, data=None,
                      "PATCH:{0}/{1}/{2}:{3}".format(
                          version, resource, identifier, JSON_MIME_TYPE)
                      )}
-        ))
+        )
+    if raw:
+        return response
+    else:
+        return result(response)
