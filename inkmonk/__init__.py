@@ -7,3 +7,7 @@ from sku import SKU
 from claim import Claim
 from campaign import Campaign
 
+
+def configure(key=None, secret=None):
+    config.API_KEY = key
+    config.API_SECRET = secret
