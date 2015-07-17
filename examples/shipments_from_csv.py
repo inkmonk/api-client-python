@@ -4,7 +4,7 @@ import inkmonk
 from toolspy import subdict
 
 
-def load_recipients_from_xl(xlbook):
+def load_recipients_from_xls(xlbook):
     wb = load_workbook(filename=sys.argv[1])
     ws = wb.worksheets[0]
 
@@ -38,7 +38,7 @@ def create_shipments(skus=[], recipients={}, key=None, secret=None):
 
 
 if __name__ == '__main__':
-    recipients = load_recipients_from_xl(sys.argv[1])
+    recipients = load_recipients_from_xls(sys.argv[1])
     key = sys.argv[2]
     secret = sys.argv[3]
     skus = {
