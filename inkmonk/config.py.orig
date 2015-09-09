@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+API_URL = "https://inkmonk.in/api"
+=======
 API_URL = "http://api.inkmonk.com"
+>>>>>>> ea50c589f274a34437f072c97053f5d4f9a50a13
 API_VERSION = 'v1'
 API_KEY = ''
 API_SECRET = ''

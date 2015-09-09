@@ -34,6 +34,23 @@ class Resource(object):
             version=version, url=url, key=key, secret=secret)]
 
     @classmethod
+    def first(cls, **kwargs):
+        kwargs['limit'] = 1
+        resultset = cls.all(**kwargs)
+        if len(resultset) == 0:
+            return None
+        return resultset[0]
+
+    @classmethod
+    def last(cls, **kwargs):
+        kwargs['limit'] = 1
+        kwargs['reverse'] = 'true'
+        resultset = cls.all(**kwargs)
+        if len(resultset) == 0:
+            return None
+        return resultset[0]
+
+    @classmethod
     def create(cls, **kwargs):
         version = kwargs.pop("version", config.API_VERSION)
         url = kwargs.pop("url", config.API_URL)

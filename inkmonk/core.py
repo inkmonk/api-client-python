@@ -10,7 +10,7 @@ JSON_MIME_TYPE = 'application/json'
 
 
 def get_basic_authorization_header(key):
-    return "Basic %s" % b64encode(key+":")
+    return "Basic %s" % b64encode(key + ":")
 
 
 def get_signed_authorization_header(key, secret, message):
@@ -38,9 +38,9 @@ def get(resource, identifier, params={}, version=config.API_VERSION,
         headers={'Content-Type': JSON_MIME_TYPE,
                  'Authorization': get_signed_authorization_header(
                      key, secret,
-                     "GET:{0}/{1}/{2}:{3}".format(
+                     "GET:/{0}/{1}/{2}:{3}".format(
                          version, resource, identifier, JSON_MIME_TYPE)
-                     )},
+                )},
         params=params)
     if raw:
         return response
@@ -60,7 +60,7 @@ def all(resource, params={}, version=config.API_VERSION,
         headers={'Content-Type': JSON_MIME_TYPE,
                  'Authorization': get_signed_authorization_header(
                      key, secret,
-                     "GET:{0}/{1}:{2}".format(
+                     "GET:/{0}/{1}:{2}".format(
                          version, resource, JSON_MIME_TYPE)
                      )},
         params=params)
@@ -83,7 +83,7 @@ def post(resource, data=None, version=config.API_VERSION,
         headers={'Content-Type': JSON_MIME_TYPE,
                  'Authorization': get_signed_authorization_header(
                      key, secret,
-                     "POST:{0}/{1}:{2}".format(
+                     "POST:/{0}/{1}:{2}".format(
                          version, resource, JSON_MIME_TYPE)
                      )}
         )
@@ -107,7 +107,7 @@ def put(resource, identifier, data=None,
         headers={'Content-Type': JSON_MIME_TYPE,
                  'Authorization': get_signed_authorization_header(
                      key, secret,
-                     "PUT:{0}/{1}/{2}:{3}".format(
+                     "PUT:/{0}/{1}/{2}:{3}".format(
                          version, resource, identifier, JSON_MIME_TYPE)
                      )}
         )
@@ -131,10 +131,9 @@ def patch(resource, identifier, data=None,
         headers={'Content-Type': JSON_MIME_TYPE,
                  'Authorization': get_signed_authorization_header(
                      key, secret,
-                     "PATCH:{0}/{1}/{2}:{3}".format(
+                     "PATCH:/{0}/{1}/{2}:{3}".format(
                          version, resource, identifier, JSON_MIME_TYPE)
-                     )}
-        )
+                     )})
     if raw:
         return response
     else:
