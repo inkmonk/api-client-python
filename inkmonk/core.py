@@ -55,15 +55,14 @@ def all(resource, params={}, version=config.API_VERSION,
         key = config.API_KEY
     if secret is None:
         secret = config.API_SECRET
-    response = requests.get(
-        '{0}/{1}/{2}'.format(url, version, resource),
-        headers={'Content-Type': JSON_MIME_TYPE,
-                 'Authorization': get_signed_authorization_header(
-                     key, secret,
-                     "GET:/{0}/{1}:{2}".format(
-                         version, resource, JSON_MIME_TYPE)
-                     )},
-        params=params)
+    resource_url = '{0}/{1}/{2}'.format(url, version, resource)
+    sess = requests.Session()
+    req = requests.Request(
+        'GET', resource_url, params=params, headers={'Content-Type': JSON_MIME_TYPE})
+    prepped_req = req.prepare()
+    prepped_req.headers['Authorization'] = get_signed_authorization_header(
+        key, secret, '{0}:{1}'.format('GET', prepped_req.url))
+    response = sess.send(prepped_req)
     if raw:
         return response
     else:

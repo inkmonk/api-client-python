@@ -1,5 +1,5 @@
-API_URL = "http://api.inkmonk.com"
+API_URL = "http://localhost:5000/api"
 API_VERSION = 'v1'
-API_KEY = ''
-API_SECRET = ''
-SITE_URL = "https://inkmonk.com"
+API_KEY = 'b9073d4bcd684cfb968a8599d86cdf8403022015091850081440'
+API_SECRET = '0e047635658444a693d98021999b45c5c2b83b6906e64bfd94bc18efd84225bc03022015091850086149'
+SITE_URL = "http://localhost:5000"
