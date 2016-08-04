@@ -2,7 +2,7 @@ from base64 import b64encode
 from hashlib import sha512
 import requests
 import config
-import json
+from flask.json import _json as json
 import hmac
 
 
@@ -26,6 +26,21 @@ def result(response):
     return None
 
 
+def getter_request(url, method='GET', params={}, key=config.API_KEY, secret=config.API_SECRET, raw=False):
+
+    sess = requests.Session()
+    req = requests.Request(
+        'GET', url, params=params, headers={})
+    prepped_req = req.prepare()
+    prepped_req.headers['Authorization'] = get_signed_authorization_header(
+        key, secret, '{0}:{1}'.format('GET', prepped_req.url))
+    response = sess.send(prepped_req)
+    if raw:
+        return response
+    else:
+        return result(response)
+
+
 def get(resource, identifier, params={}, version=config.API_VERSION,
         url=config.API_URL, key=config.API_KEY,
         secret=config.API_SECRET, raw=False):
@@ -33,14 +48,14 @@ def get(resource, identifier, params={}, version=config.API_VERSION,
         key = config.API_KEY
     if secret is None:
         secret = config.API_SECRET
+    resource_url = '%s/%s/%s/%s' % (url, version, resource, identifier)
     response = requests.get(
-        '%s/%s/%s/%s' % (url, version, resource, identifier),
-        headers={'Content-Type': JSON_MIME_TYPE,
+        resource_url,
+        headers={
                  'Authorization': get_signed_authorization_header(
                      key, secret,
                      "GET:/{0}/{1}/{2}:{3}".format(
-                         version, resource, identifier, JSON_MIME_TYPE)
-                )},
+                         version, resource, identifier, JSON_MIME_TYPE))},
         params=params)
     if raw:
         return response
@@ -58,7 +73,7 @@ def all(resource, params={}, version=config.API_VERSION,
     resource_url = '{0}/{1}/{2}'.format(url, version, resource)
     sess = requests.Session()
     req = requests.Request(
-        'GET', resource_url, params=params, headers={'Content-Type': JSON_MIME_TYPE})
+        'GET', resource_url, params=params, headers={})
     prepped_req = req.prepare()
     prepped_req.headers['Authorization'] = get_signed_authorization_header(
         key, secret, '{0}:{1}'.format('GET', prepped_req.url))
@@ -68,72 +83,46 @@ def all(resource, params={}, version=config.API_VERSION,
     else:
         return result(response)
 
-
-def post(resource, data=None, version=config.API_VERSION,
-         url=config.API_URL, key=config.API_KEY,
-         secret=config.API_SECRET, raw=False):
-    if key is None:
-        key = config.API_KEY
-    if secret is None:
-        secret = config.API_SECRET
-    response = requests.post(
-        '{0}/{1}/{2}'.format(url, version, resource),
-        data=json.dumps(data),
-        headers={'Content-Type': JSON_MIME_TYPE,
-                 'Authorization': get_signed_authorization_header(
-                     key, secret,
-                     "POST:/{0}/{1}:{2}".format(
-                         version, resource, JSON_MIME_TYPE)
-                     )}
-        )
+def setter_request(url, method, data, key=config.API_KEY, secret=config.API_SECRET, raw=False):
+    requester = getattr(requests, method.lower())
+    json_data = json.dumps(data)
+    response = requester(
+        url, data=json_data,
+        headers={
+            'Content-Type': JSON_MIME_TYPE,
+            'Authorization': get_signed_authorization_header(
+                key or config.API_KEY, secret or config.API_SECRET,
+                "{0}:{1}:{2}:{3}".format(
+                    method, url, JSON_MIME_TYPE, json_data))})
     if raw:
         return response
     else:
         return result(response)
+
+
+
+
+def post(resource, data=None, version=config.API_VERSION,
+         url=config.API_URL, key=config.API_KEY,
+         secret=config.API_SECRET, raw=False):
+    return setter_request(
+        url='{0}/{1}/{2}'.format(url, version, resource),
+        method='POST', data=data, key=key, secret=secret, raw=raw)
 
 
 def put(resource, identifier, data=None,
         version=config.API_VERSION,
         url=config.API_URL, key=config.API_KEY,
         secret=config.API_SECRET, raw=False):
-    if key is None:
-        key = config.API_KEY
-    if secret is None:
-        secret = config.API_SECRET
-    response = requests.put(
-        '{0}/{1}/{2}/{3}'.format(url, version, resource, identifier),
-        data=json.dumps(data),
-        headers={'Content-Type': JSON_MIME_TYPE,
-                 'Authorization': get_signed_authorization_header(
-                     key, secret,
-                     "PUT:/{0}/{1}/{2}:{3}".format(
-                         version, resource, identifier, JSON_MIME_TYPE)
-                     )}
-        )
-    if raw:
-        return response
-    else:
-        return result(response)
+    return setter_request(
+        url='{0}/{1}/{2}/{3}'.format(url, version, resource, identifier),
+        method='PUT', data=data, key=key, secret=secret, raw=raw)
 
 
 def patch(resource, identifier, data=None,
           version=config.API_VERSION,
           url=config.API_URL, key=config.API_KEY,
           secret=config.API_SECRET, raw=False):
-    if key is None:
-        key = config.API_KEY
-    if secret is None:
-        secret = config.API_SECRET
-    response = requests.patch(
-        '{0}/{1}/{2}/{3}'.format(url, version, resource, identifier),
-        data=json.dumps(data),
-        headers={'Content-Type': JSON_MIME_TYPE,
-                 'Authorization': get_signed_authorization_header(
-                     key, secret,
-                     "PATCH:/{0}/{1}/{2}:{3}".format(
-                         version, resource, identifier, JSON_MIME_TYPE)
-                     )})
-    if raw:
-        return response
-    else:
-        return result(response)
+    return setter_request(
+        url='{0}/{1}/{2}/{3}'.format(url, version, resource, identifier),
+        method='PATCH', data=data, key=key, secret=secret, raw=raw)
